@@ -1148,7 +1148,6 @@
           return { success: true };
         }
       } catch (err) {
-        // Fallback for strict browser CORS handling on GAS redirects
         await fetch(SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
@@ -1362,6 +1361,9 @@
         const bookingId = res.bookingId || "BKG-NEW";
         const savedRecord = { ...draft, Booking_ID: bookingId };
         document.getElementById("bookingForm").reset();
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById("bkgFrom").value = today;
+        document.getElementById("bkgTo").value = today;
         recalcBooking();
         await loadAllData(false);
 
@@ -1472,8 +1474,7 @@
         `Total: ${fmtNum(b.Total_Amount)} | Paid: ${fmtNum(b.Paid_Amount)} | Pending: ${fmtNum(b.Pending_Amount)}`,
         `Allowed KM: ${fmtNum(b.Allowed_KM)} KM | Start KM: ${fmtNum(b.Start_KM)} KM`,
         `Extra KM Rate: ${fmtNum(b.Extra_KM_Rate)}/KM`
-      ].join("
-");
+      ].join("\n");
 
       const url = cleanPhone
         ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`
@@ -1570,7 +1571,6 @@
       const baseRent = Number(activeReturnBooking.Base_Rent || activeReturnBooking.Total_Amount || 0);
 
       const endKm = Number(document.getElementById("retEndKm").value || startKm);
-      const paid = Number(document.getElementById("retPaidAmount").value || 0);
 
       const drivenKm = Math.max(0, endKm - startKm);
       const extraKm = Math.max(0, drivenKm - allowedKm);

@@ -3,650 +3,883 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DriveEase Fleet — Rent-a-Vehicle Management</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Sinhala:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-          }
-        }
-      }
-    };
-  </script>
+  <title>DriveEase Fleet - Rent-a-Vehicle Management</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f172a;
+      --accent: #d97706;
+      --accent-soft: #fef3c7;
+      --success: #059669;
+      --success-soft: #d1fae5;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --info: #0284c7;
+      --info-soft: #e0f2fe;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+      padding-bottom: 48px;
     }
-    .agreement-multilang {
-      font-family: 'Inter', 'Noto Sans Malayalam', 'Noto Sans Tamil', 'Noto Sans Sinhala', sans-serif;
+
+    .topbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.14);
     }
-    .custom-scroll::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: rgba(148, 163, 184, 0.14);
-      border-radius: 9999px;
+
+    .brand-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: rgba(100, 116, 139, 0.45);
-      border-radius: 9999px;
+
+    .brand {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(71, 85, 105, 0.75);
+
+    .brand span.tag {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 600;
     }
+
+    .credit-subtle {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      letter-spacing: 0.2px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.09);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .nav-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 18px auto 0;
+      padding: 0 16px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .section-sub {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .stat-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .stat-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      padding: 9px 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: 2px solid var(--accent);
+      border-color: var(--accent);
+    }
+
+    .calc-box {
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .calc-item strong {
+      display: block;
+      font-size: 1.05rem;
+      color: var(--primary);
+    }
+
+    .calc-item span {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 15px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn:hover { opacity: 0.92; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-info { background: var(--info); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-outline { background: #fff; color: var(--ink); border: 1px solid #cbd5e1; }
+    .btn-sm { padding: 6px 10px; font-size: 0.78rem; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 700;
+      color: #334155;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .badge-warn { background: var(--accent-soft); color: #92400e; }
+    .badge-ok { background: var(--success-soft); color: #065f46; }
+    .badge-bad { background: var(--danger-soft); color: #991b1b; }
+    .badge-info { background: var(--info-soft); color: #075985; }
+
+    .alert-box {
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .alert-bad {
+      background: var(--danger-soft);
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .alert-ok {
+      background: var(--success-soft);
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      z-index: 80;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title { font-size: 1.08rem; font-weight: 700; }
+
+    .close-x {
+      background: #f1f5f9;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    /* 1-Page Printable Agreement */
+    .agreement-sheet {
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      padding: 16px 20px;
+      background: #fff;
+      color: #0f172a;
+      font-size: 0.85rem;
+      line-height: 1.42;
+    }
+
+    .agr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1.5px solid #0f172a;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .agr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+      margin-bottom: 10px;
+    }
+
+    .agr-terms {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+    }
+
+    .agr-terms ul { padding-left: 18px; }
+    .agr-terms li { margin-bottom: 3px; }
+
+    .sig-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 22px;
+      padding-top: 6px;
+    }
+
+    .sig-line {
+      border-top: 1px solid #334155;
+      padding-top: 4px;
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
     @media print {
-      body * {
-        visibility: hidden !important;
-      }
-      #printableAgreementArea, #printableAgreementArea * {
-        visibility: visible !important;
-      }
-      #printableAgreementArea {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        padding: 20px !important;
-        background: #ffffff !important;
-        color: #0f172a !important;
-      }
+      @page { size: A4 portrait; margin: 10mm; }
+      body * { visibility: hidden; }
+      #agreementModal, #agreementModal * { visibility: visible; }
+      .modal-backdrop { position: static; background: none; padding: 0; }
+      .modal { max-height: none; box-shadow: none; padding: 0; width: 100%; max-width: 100%; }
+      .no-print { display: none !important; }
+      .agreement-sheet { border: 1px solid #000; page-break-inside: avoid; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-btn { padding: 6px 9px; font-size: 0.78rem; }
+      .agr-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col">
+<body>
 
-  <!-- Top Navigation Bar -->
-  <header class="sticky top-0 z-30 bg-slate-950 text-white border-b border-slate-800 shadow-md">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex flex-col gap-3">
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500 text-slate-950 font-extrabold flex items-center justify-center text-lg shrink-0 shadow">
-            🚗
-          </div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-2">
-              <h1 class="text-sm sm:text-lg font-extrabold tracking-tight truncate">DriveEase Fleet</h1>
-              <span id="syncBadge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
-                Connected
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-400 truncate">Vehicle Rental, KM Limit & Fleet Ledger</p>
-          </div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-wrap">
+        <div class="brand">
+          <span>DriveEase Fleet</span>
+          <span class="tag">Rent-a-Vehicle</span>
         </div>
-
-        <div class="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            id="refreshDataBtn"
-            class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold transition flex items-center gap-1.5 border border-slate-700"
-          >
-            <span id="refreshIcon">🔄</span>
-            <span class="hidden sm:inline">Refresh</span>
-          </button>
-        </div>
+        <div class="credit-subtle">Designed &amp; Developed by Deepak</div>
       </div>
 
-      <!-- 7 Clean Navigation Buttons -->
-      <nav aria-label="Primary Navigation" class="flex items-center gap-1.5 overflow-x-auto custom-scroll pb-1 sm:pb-0 sm:flex-wrap">
-        <button type="button" data-tab="home" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-amber-500 text-slate-950 shadow">
-          <span>🏠</span><span>Home</span>
-        </button>
-        <button type="button" data-tab="add-vehicle" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>➕</span><span>Add Vehicle</span>
-        </button>
-        <button type="button" data-tab="booking" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>📝</span><span>Booking</span>
-        </button>
-        <button type="button" data-tab="fleet-status" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>📋</span><span>Booked / Available</span>
-        </button>
-        <button type="button" data-tab="rents" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>💰</span><span>Rents</span>
-        </button>
-        <button type="button" data-tab="repairs" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>🛠️</span><span>Vehicle Repair</span>
-        </button>
-        <button type="button" data-tab="history" class="nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800">
-          <span>📜</span><span>Vehicle History</span>
-        </button>
+      <nav class="nav" id="mainNav">
+        <button class="nav-btn active" data-page="home">Home</button>
+        <button class="nav-btn" data-page="add-vehicle">Add Vehicle</button>
+        <button class="nav-btn" data-page="booking">Booking</button>
+        <button class="nav-btn" data-page="fleet-status">Booked / Available</button>
+        <button class="nav-btn" data-page="rents">Rents</button>
+        <button class="nav-btn" data-page="repairs">Vehicle Repair</button>
+        <button class="nav-btn" data-page="history">Vehicle History</button>
       </nav>
     </div>
   </header>
 
-  <!-- Notification Banner -->
-  <div id="statusToast" class="fixed bottom-4 right-4 z-50 hidden max-w-sm bg-slate-900 text-white border border-slate-700 rounded-2xl shadow-2xl px-4 py-3 text-xs sm:text-sm items-center gap-3">
-    <span id="toastSymbol" class="text-base">✅</span>
-    <span id="toastText" class="flex-1 font-medium">Saved</span>
-    <button type="button" id="closeToastBtn" class="text-slate-400 hover:text-white font-bold px-1">✕</button>
-  </div>
+  <main class="container">
 
-  <!-- Main Workspace Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 space-y-6">
-
-    <!-- ===================================================================== -->
-    <!-- 1. HOME PAGE                                                          -->
-    <!-- ===================================================================== -->
-    <section id="section-home" class="app-section space-y-5">
-      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-700/70 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="space-y-1.5">
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
-            <span>🚘</span><span>Fleet Operations & Rental Control</span>
-          </span>
-          <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight">Rent-a-Vehicle Dashboard</h2>
-          <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
-            Track vehicle availability, daily kilometer limits, extra KM charges on return, received vs. pending rents, and repair expenses in one place.
-          </p>
+    <!-- 1. HOME -->
+    <section id="page-home" class="page active">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Fleet Overview</h1>
+          <p class="section-sub">Live summary of vehicles, bookings, rents, and repairs</p>
         </div>
-        <div class="flex flex-wrap gap-2.5 shrink-0">
-          <button type="button" data-goto="booking" class="goto-btn px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow transition">
-            + Create Booking
-          </button>
-          <button type="button" data-goto="add-vehicle" class="goto-btn px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/15 transition">
-            + Add Vehicle
-          </button>
+        <button class="btn btn-outline btn-sm" onclick="loadAllData(true)">Refresh Data</button>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="stat-label">Total Vehicles</div>
+          <div class="stat-val" id="statTotalVehicles">0</div>
+          <div class="stat-note" id="statAvailSplit">0 Available · 0 Booked</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Active Bookings</div>
+          <div class="stat-val" id="statActiveBookings">0</div>
+          <div class="stat-note">Currently out on rent</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Rent Received</div>
+          <div class="stat-val" style="color: var(--success);" id="statRentReceived">0</div>
+          <div class="stat-note">Collected across bookings</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Pending Rent</div>
+          <div class="stat-val" style="color: var(--danger);" id="statPendingRent">0</div>
+          <div class="stat-note">Balance due from renters</div>
         </div>
       </div>
 
-      <!-- Home Stat Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-slate-500">Total Vehicles</div>
-          <div id="statTotalVehicles" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">0</div>
-          <div id="statFleetSplit" class="text-[11px] text-slate-500 mt-1">0 Booked • 0 Available</div>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Rent Received vs Pending</h3>
+          <canvas id="homeRentChart" height="170"></canvas>
         </div>
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-slate-500">Active Bookings</div>
-          <div id="statActiveBookings" class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1">0</div>
-          <div class="text-[11px] text-slate-500 mt-1">Vehicles currently on rent</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-slate-500">Received Rent</div>
-          <div id="statReceivedRent" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">0</div>
-          <div class="text-[11px] text-slate-500 mt-1">Collected payments</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-slate-500">Pending Rent</div>
-          <div id="statPendingRent" class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1">0</div>
-          <div class="text-[11px] text-slate-500 mt-1">Balance to collect</div>
-        </div>
-      </div>
-
-      <!-- Home Charts: Pending vs Received Rent + Monthly Rent -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
-        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h3 class="text-sm sm:text-base font-bold text-slate-900">Pending vs. Received Rent</h3>
-              <p class="text-xs text-slate-500">Breakdown by booking / vehicle</p>
-            </div>
-            <button type="button" data-goto="rents" class="goto-btn text-xs font-semibold text-amber-600 hover:underline">View Rents →</button>
-          </div>
-          <div class="h-64 w-full">
-            <canvas id="homePendingReceivedChart"></canvas>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h3 class="text-sm sm:text-base font-bold text-slate-900">Monthly Rent Overview</h3>
-              <p class="text-xs text-slate-500">Total billed & received rent by month</p>
-            </div>
-            <button type="button" data-goto="history" class="goto-btn text-xs font-semibold text-amber-600 hover:underline">Vehicle History →</button>
-          </div>
-          <div class="h-64 w-full">
-            <canvas id="homeMonthlyRentChart"></canvas>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================================================================== -->
-    <!-- 2. ADD VEHICLE PAGE                                                   -->
-    <!-- ===================================================================== -->
-    <section id="section-add-vehicle" class="app-section hidden space-y-5">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="mb-4">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Fleet Setup</span>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Add New Vehicle</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Register a vehicle with daily rent rate, KM limit, extra KM charge, and current odometer.</p>
-          </div>
-
-          <form id="addVehicleForm" class="space-y-3.5 text-xs sm:text-sm">
-            <div>
-              <label for="vehName" class="block font-semibold text-slate-700 mb-1">Vehicle Name *</label>
-              <input type="text" id="vehName" required placeholder="e.g., Kia Sportage" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="vehRegNo" class="block font-semibold text-slate-700 mb-1">Registration Number *</label>
-                <input type="text" id="vehRegNo" required placeholder="e.g., 774821" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="vehType" class="block font-semibold text-slate-700 mb-1">Vehicle Type *</label>
-                <select id="vehType" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                  <option value="Sedan">Sedan</option>
-                  <option value="SUV">SUV</option>
-                  <option value="Hatchback">Hatchback</option>
-                  <option value="MPV">MPV</option>
-                  <option value="Van">Van</option>
-                  <option value="Bike">Bike</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="vehDailyRate" class="block font-semibold text-slate-700 mb-1">Daily Rate *</label>
-                <input type="number" id="vehDailyRate" required min="1" step="any" placeholder="150" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="vehDailyKmLimit" class="block font-semibold text-slate-700 mb-1">Daily KM Limit *</label>
-                <input type="number" id="vehDailyKmLimit" required min="1" step="1" value="150" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="vehExtraKmRate" class="block font-semibold text-slate-700 mb-1">Extra KM Rate *</label>
-                <input type="number" id="vehExtraKmRate" required min="0" step="any" value="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="vehCurrentKm" class="block font-semibold text-slate-700 mb-1">Current KM (Odometer) *</label>
-                <input type="number" id="vehCurrentKm" required min="0" step="1" placeholder="25000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <button type="submit" id="saveVehicleBtn" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-sm transition shadow">
-              Save Vehicle
-            </button>
-          </form>
-        </div>
-
-        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="text-base sm:text-lg font-bold text-slate-900">Registered Vehicles</h3>
-              <p class="text-xs text-slate-500">Current fleet list synced with Google Sheet</p>
-            </div>
-            <span id="vehicleCountBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800">0 Vehicles</span>
-          </div>
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Recent Bookings</h3>
+          <div class="table-wrap">
+            <table>
               <thead>
-                <tr class="border-b border-slate-200 text-slate-500 text-xs">
-                  <th class="py-2.5 pr-2">Vehicle</th>
-                  <th class="py-2.5 px-2">Rate / Day</th>
-                  <th class="py-2.5 px-2">KM Limit</th>
-                  <th class="py-2.5 px-2">Current KM</th>
-                  <th class="py-2.5 pl-2 text-right">Status</th>
+                <tr>
+                  <th>Booking</th>
+                  <th>Vehicle</th>
+                  <th>Customer</th>
+                  <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="vehiclesTableBody" class="divide-y divide-slate-100"></tbody>
+              <tbody id="homeRecentBookings"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===================================================================== -->
-    <!-- 3. BOOKING PAGE + MULTI-LANGUAGE RENTAL AGREEMENT                    -->
-    <!-- ===================================================================== -->
-    <section id="section-booking" class="app-section hidden space-y-5">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <!-- Booking Form -->
-        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="mb-4">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Rental Reservation</span>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Book a Vehicle</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Total days, allowed KM, base rent, and pending amount auto-calculate below. Choose agreement language and submit.</p>
-          </div>
-
-          <form id="bookingForm" class="space-y-3.5 text-xs sm:text-sm">
-            <div>
-              <label for="bkVehicleId" class="block font-semibold text-slate-700 mb-1">Select Vehicle *</label>
-              <select id="bkVehicleId" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="bkFromDate" class="block font-semibold text-slate-700 mb-1">From Date *</label>
-                <input type="date" id="bkFromDate" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkToDate" class="block font-semibold text-slate-700 mb-1">To Date *</label>
-                <input type="date" id="bkToDate" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label for="bkCustomerName" class="block font-semibold text-slate-700 mb-1">Customer Name *</label>
-                <input type="text" id="bkCustomerName" required placeholder="Customer full name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkPhone" class="block font-semibold text-slate-700 mb-1">Contact Number *</label>
-                <input type="tel" id="bkPhone" required placeholder="e.g., 97455123456" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkLicenseNo" class="block font-semibold text-slate-700 mb-1">License No *</label>
-                <input type="text" id="bkLicenseNo" required placeholder="Driving license no" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label for="bkDailyRate" class="block font-semibold text-slate-700 mb-1">Price / Day *</label>
-                <input type="number" id="bkDailyRate" required min="1" step="any" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkDailyKmLimit" class="block font-semibold text-slate-700 mb-1">Daily KM Limit *</label>
-                <input type="number" id="bkDailyKmLimit" required min="1" step="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkExtraKmRate" class="block font-semibold text-slate-700 mb-1">Extra KM Rate *</label>
-                <input type="number" id="bkExtraKmRate" required min="0" step="any" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkStartKm" class="block font-semibold text-slate-700 mb-1">Start KM *</label>
-                <input type="number" id="bkStartKm" required min="0" step="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="bkPaidAmount" class="block font-semibold text-slate-700 mb-1">Paid / Advance Amount</label>
-                <input type="number" id="bkPaidAmount" min="0" step="any" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="bkAgreementLang" class="block font-semibold text-slate-700 mb-1">Agreement Language *</label>
-                <select id="bkAgreementLang" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                  <option value="English">English</option>
-                  <option value="Tamil">Tamil (தமிழ்)</option>
-                  <option value="Sinhala">Sinhala (සිංහල)</option>
-                  <option value="Malayalam">Malayalam (മലയാളം)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Auto-Calculated Summary Box -->
-            <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <span class="text-[11px] font-semibold text-amber-800 block">Total Days</span>
-                <span id="bkCalcDays" class="text-base sm:text-lg font-extrabold text-slate-900">1 Day</span>
-              </div>
-              <div>
-                <span class="text-[11px] font-semibold text-amber-800 block">Allowed KM</span>
-                <span id="bkCalcAllowedKm" class="text-base sm:text-lg font-extrabold text-slate-900">150 KM</span>
-              </div>
-              <div>
-                <span class="text-[11px] font-semibold text-amber-800 block">Total Amount</span>
-                <span id="bkCalcTotal" class="text-base sm:text-lg font-extrabold text-emerald-700">0</span>
-              </div>
-              <div>
-                <span class="text-[11px] font-semibold text-amber-800 block">Pending Amount</span>
-                <span id="bkCalcPending" class="text-base sm:text-lg font-extrabold text-rose-700">0</span>
-              </div>
-            </div>
-
-            <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
-              <button type="submit" id="submitBookingBtn" class="flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm shadow transition">
-                Submit Booking & Generate Agreement
-              </button>
-              <button type="button" id="previewAgreementBtn" class="py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm transition">
-                Preview Agreement
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Simple Rental Agreement Preview & Share Panel -->
-        <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-3">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Simple Agreement Format</span>
-                <h3 class="text-base font-extrabold text-slate-900">Rental Agreement (<span id="liveLangLabel">English</span>)</h3>
-              </div>
-              <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">Auto-Generated</span>
-            </div>
-
-            <div id="printableAgreementArea" class="agreement-multilang bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-800 whitespace-pre-line leading-relaxed max-h-[420px] overflow-y-auto custom-scroll"></div>
-          </div>
-
-          <div class="mt-4 pt-3 border-t border-slate-200 flex flex-wrap gap-2">
-            <button type="button" id="printSavePdfBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition">
-              <span>📄</span><span>Save / Print PDF</span>
-            </button>
-            <button type="button" id="downloadJsPdfBtn" class="py-2.5 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold text-xs flex items-center justify-center gap-1.5 transition">
-              <span>⬇️</span><span>Download PDF</span>
-            </button>
-            <button type="button" id="shareWhatsappBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
-              <span>💬</span><span>Send via WhatsApp</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================================================================== -->
-    <!-- 4. BOOKED / NON-BOOKED VEHICLES PAGE                                  -->
-    <!-- ===================================================================== -->
-    <section id="section-fleet-status" class="app-section hidden space-y-5">
-      <div>
-        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Booked & Non-Booked Vehicles</h2>
-        <p class="text-xs text-slate-500">Click <strong>Details</strong> to inspect renter info, or <strong>Return Vehicle</strong> to enter return KM and check extra KM charges.</p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <!-- Booked Vehicles Table -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <span>Booked Vehicles</span>
-            </h3>
-            <span id="bookedCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">0</span>
-          </div>
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-500">
-                  <th class="py-2.5 pr-2">Vehicle</th>
-                  <th class="py-2.5 px-2">Renter</th>
-                  <th class="py-2.5 px-2">KM Limit</th>
-                  <th class="py-2.5 pl-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="bookedVehiclesBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Non-Booked (Available) Vehicles Table -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span>Non-Booked Vehicles</span>
-            </h3>
-            <span id="nonBookedCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">0</span>
-          </div>
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="border-b border-slate-200 text-slate-500">
-                  <th class="py-2.5 pr-2">Vehicle</th>
-                  <th class="py-2.5 px-2">Rate / Day</th>
-                  <th class="py-2.5 px-2">Current KM</th>
-                  <th class="py-2.5 pl-2 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody id="nonBookedVehiclesBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================================================================== -->
-    <!-- 5. RENTS PAGE (PENDING VS RECEIVED RENT GRAPH)                        -->
-    <!-- ===================================================================== -->
-    <section id="section-rents" class="app-section hidden space-y-5">
-      <div>
-        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Rents — Pending & Received</h2>
-        <p class="text-xs text-slate-500">Monitor received rent, pending balances, and settle open customer dues.</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-slate-500">Total Billed Rent</div>
-          <div id="rentsTotalBilled" class="text-2xl font-extrabold text-slate-900 mt-1">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-emerald-700">Received Rent</div>
-          <div id="rentsTotalReceived" class="text-2xl font-extrabold text-emerald-600 mt-1">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-          <div class="text-xs font-semibold text-rose-700">Pending Rent</div>
-          <div id="rentsTotalPending" class="text-2xl font-extrabold text-rose-600 mt-1">0</div>
+    <!-- 2. ADD VEHICLE -->
+    <section id="page-add-vehicle" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Add Vehicle</h1>
+          <p class="section-sub">Register a new vehicle with daily rate, KM limit, and odometer reading</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-8 bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-3">Pending vs. Received Rent Graph</h3>
-          <div class="h-64 w-full">
-            <canvas id="rentsComparisonChart"></canvas>
+      <div class="card" style="margin-bottom: 18px;">
+        <form id="addVehicleForm" onsubmit="handleAddVehicle(event)">
+          <div class="form-grid">
+            <div class="field">
+              <label>Vehicle Name *</label>
+              <input type="text" id="vehName" required placeholder="e.g. Toyota Corolla" />
+            </div>
+            <div class="field">
+              <label>Registration Number *</label>
+              <input type="text" id="vehReg" required placeholder="e.g. 482910" />
+            </div>
+            <div class="field">
+              <label>Type</label>
+              <select id="vehType">
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Van">Van</option>
+                <option value="Bike">Bike</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Daily Rate *</label>
+              <input type="number" id="vehRate" min="0" step="any" required placeholder="120" />
+            </div>
+            <div class="field">
+              <label>Daily KM Limit *</label>
+              <input type="number" id="vehKmLimit" min="0" step="any" required value="150" />
+            </div>
+            <div class="field">
+              <label>Extra KM Rate *</label>
+              <input type="number" id="vehExtraKmRate" min="0" step="any" required value="2" />
+            </div>
+            <div class="field">
+              <label>Current Odometer (KM) *</label>
+              <input type="number" id="vehStartKm" min="0" step="any" required placeholder="45200" />
+            </div>
           </div>
-        </div>
-        <div class="lg:col-span-4 bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-          <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-3">Collection Split</h3>
-          <div class="h-64 w-full">
-            <canvas id="rentsSplitChart"></canvas>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="btnAddVehicle">Save Vehicle</button>
           </div>
-        </div>
+        </form>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-        <h3 class="text-sm sm:text-base font-bold text-slate-900 mb-3">Booking Rent Ledger</h3>
-        <div class="overflow-x-auto custom-scroll">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+      <div class="card">
+        <h3 style="margin-bottom: 10px; font-size: 1rem;">Registered Vehicles</h3>
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-200 text-slate-500 text-xs">
-                <th class="py-2.5 pr-2">Booking / Customer</th>
-                <th class="py-2.5 px-2">Vehicle</th>
-                <th class="py-2.5 px-2">Extra KM</th>
-                <th class="py-2.5 px-2">Total</th>
-                <th class="py-2.5 px-2">Received</th>
-                <th class="py-2.5 px-2">Pending</th>
-                <th class="py-2.5 pl-2 text-right">Action</th>
+              <tr>
+                <th>ID</th>
+                <th>Vehicle</th>
+                <th>Reg No</th>
+                <th>Rate/Day</th>
+                <th>KM Limit/Day</th>
+                <th>Extra/KM</th>
+                <th>Odometer</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody id="rentsLedgerBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="vehiclesListBody"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ===================================================================== -->
-    <!-- 6. VEHICLE REPAIR PAGE                                                -->
-    <!-- ===================================================================== -->
-    <section id="section-repairs" class="app-section hidden space-y-5">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="mb-4">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Maintenance</span>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Add Vehicle Repair</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Select a vehicle and record repair remarks, date, and cost.</p>
-          </div>
-
-          <form id="addRepairForm" class="space-y-3.5 text-xs sm:text-sm">
-            <div>
-              <label for="repVehicleId" class="block font-semibold text-slate-700 mb-1">Select Vehicle *</label>
-              <select id="repVehicleId" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label for="repDate" class="block font-semibold text-slate-700 mb-1">Repair Date *</label>
-                <input type="date" id="repDate" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-              <div>
-                <label for="repCost" class="block font-semibold text-slate-700 mb-1">Repair Cost *</label>
-                <input type="number" id="repCost" required min="1" step="any" placeholder="250" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" />
-              </div>
-            </div>
-
-            <div>
-              <label for="repRemarks" class="block font-semibold text-slate-700 mb-1">Repair Remarks *</label>
-              <textarea id="repRemarks" rows="3" required placeholder="Describe repair work, parts replaced, or service details..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-            </div>
-
-            <button type="submit" id="saveRepairBtn" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-sm transition shadow">
-              Save Repair Entry
-            </button>
-          </form>
+    <!-- 3. BOOKING -->
+    <section id="page-booking" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">New Booking &amp; Agreement</h1>
+          <p class="section-sub">Auto-calculates days, rent, and allowed KM; generates agreement in your chosen language</p>
         </div>
+      </div>
 
-        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="text-base sm:text-lg font-bold text-slate-900">Repair Logs</h3>
-              <p class="text-xs text-slate-500">Total Repair Expense: <strong id="totalRepairExpenseText" class="text-rose-600">0</strong></p>
+      <div class="card">
+        <form id="bookingForm" onsubmit="handleCreateBooking(event)">
+          <div class="form-grid">
+            <div class="field">
+              <label>Select Available Vehicle *</label>
+              <select id="bkgVehicle" required onchange="onBookingVehicleChange()"></select>
+            </div>
+            <div class="field">
+              <label>Customer Name *</label>
+              <input type="text" id="bkgCustomer" required placeholder="Full name" />
+            </div>
+            <div class="field">
+              <label>Contact Number (WhatsApp) *</label>
+              <input type="text" id="bkgPhone" required placeholder="e.g. 97455123456" />
+            </div>
+            <div class="field">
+              <label>License Number *</label>
+              <input type="text" id="bkgLicense" required placeholder="Driving license no" />
+            </div>
+            <div class="field">
+              <label>From Date *</label>
+              <input type="date" id="bkgFrom" required onchange="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>To Date *</label>
+              <input type="date" id="bkgTo" required onchange="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Price Per Day *</label>
+              <input type="number" id="bkgRate" min="0" step="any" required oninput="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Daily KM Limit *</label>
+              <input type="number" id="bkgKmLimit" min="0" step="any" required oninput="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Extra KM Rate *</label>
+              <input type="number" id="bkgExtraKmRate" min="0" step="any" required oninput="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Start Odometer (KM) *</label>
+              <input type="number" id="bkgStartKm" min="0" step="any" required oninput="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Advance / Paid Amount</label>
+              <input type="number" id="bkgPaid" min="0" step="any" value="0" oninput="recalcBooking()" />
+            </div>
+            <div class="field">
+              <label>Agreement Language</label>
+              <select id="bkgLang">
+                <option value="English">English</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Sinhala">Sinhala</option>
+                <option value="Malayalam">Malayalam</option>
+              </select>
             </div>
           </div>
-          <div class="overflow-x-auto custom-scroll">
-            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+
+          <div class="calc-box">
+            <div class="calc-item">
+              <span>Total Days</span>
+              <strong id="calcDays">1</strong>
+            </div>
+            <div class="calc-item">
+              <span>Total Rental Amount</span>
+              <strong id="calcTotal">0</strong>
+            </div>
+            <div class="calc-item">
+              <span>Pending Amount</span>
+              <strong id="calcPending">0</strong>
+            </div>
+            <div class="calc-item">
+              <span>Allowed KM Limit</span>
+              <strong id="calcAllowedKm">0 KM</strong>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn btn-accent" id="btnSubmitBooking">Submit Booking</button>
+            <button type="button" class="btn btn-outline" onclick="previewCurrentFormAgreement()">Preview Agreement</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 4. BOOKED / NON-BOOKED -->
+    <section id="page-fleet-status" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Booked &amp; Available Vehicles</h1>
+          <p class="section-sub">Inspect renter details, return vehicles with KM check, or book available units</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Booked Vehicles</h3>
+          <div class="table-wrap">
+            <table>
               <thead>
-                <tr class="border-b border-slate-200 text-slate-500 text-xs">
-                  <th class="py-2.5 pr-2">Date</th>
-                  <th class="py-2.5 px-2">Vehicle</th>
-                  <th class="py-2.5 px-2">Remarks</th>
-                  <th class="py-2.5 pl-2 text-right">Cost</th>
+                <tr>
+                  <th>Vehicle</th>
+                  <th>Renter</th>
+                  <th>Start KM / Limit</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="repairsTableBody" class="divide-y divide-slate-100"></tbody>
+              <tbody id="bookedVehiclesBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Available (Non-Booked) Vehicles</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vehicle</th>
+                  <th>Rate / Limit</th>
+                  <th>Odometer</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="availableVehiclesBody"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===================================================================== -->
-    <!-- 7. HISTORY OF VEHICLE PAGE                                            -->
-    <!-- ===================================================================== -->
-    <section id="section-history" class="app-section hidden space-y-5">
-      <div>
-        <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">History of Vehicle</h2>
-        <p class="text-xs text-slate-500">Total rent received, total repair cost, driven/extra KMs, and net earnings for each vehicle.</p>
+    <!-- 5. RENTS -->
+    <section id="page-rents" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Rents &amp; Pending Balances</h1>
+          <p class="section-sub">Track collected rent, pending dues, and settle balances</p>
+        </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-        <div class="overflow-x-auto custom-scroll">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Received vs Pending by Booking</h3>
+          <canvas id="rentsBarChart" height="170"></canvas>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom: 10px; font-size: 1rem;">Rent Summary</h3>
+          <div class="calc-box" style="margin-top: 0;">
+            <div class="calc-item">
+              <span>Gross Billed</span>
+              <strong id="rentGrossTotal">0</strong>
+            </div>
+            <div class="calc-item">
+              <span>Received</span>
+              <strong style="color: var(--success);" id="rentReceivedTotal">0</strong>
+            </div>
+            <div class="calc-item">
+              <span>Pending</span>
+              <strong style="color: var(--danger);" id="rentPendingTotal">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: 10px; font-size: 1rem;">Bookings Payment Ledger</h3>
+        <div class="table-wrap">
+          <table>
             <thead>
-              <tr class="border-b border-slate-200 text-slate-500 text-xs">
-                <th class="py-3 pr-2">Vehicle</th>
-                <th class="py-3 px-2">Trips</th>
-                <th class="py-3 px-2">Driven / Extra KM</th>
-                <th class="py-3 px-2">Total Rent Received</th>
-                <th class="py-3 px-2">Total Repair Cost</th>
-                <th class="py-3 pl-2 text-right">Net (Rent − Repair)</th>
+              <tr>
+                <th>Booking ID</th>
+                <th>Vehicle</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Pending</th>
+                <th>Status</th>
+                <th>Settle</th>
               </tr>
             </thead>
-            <tbody id="vehicleHistoryBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="rentsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. VEHICLE REPAIR -->
+    <section id="page-repairs" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Vehicle Repair Log</h1>
+          <p class="section-sub">Select a vehicle and record repair date, remarks, and cost</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <form id="repairForm" onsubmit="handleAddRepair(event)">
+          <div class="form-grid">
+            <div class="field">
+              <label>Select Vehicle *</label>
+              <select id="repVehicle" required></select>
+            </div>
+            <div class="field">
+              <label>Repair Date *</label>
+              <input type="date" id="repDate" required />
+            </div>
+            <div class="field">
+              <label>Cost *</label>
+              <input type="number" id="repCost" min="0" step="any" required placeholder="250" />
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label>Repair Remarks *</label>
+              <input type="text" id="repRemarks" required placeholder="e.g. Brake pad replacement, oil change" />
+            </div>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="btnAddRepair">Save Repair</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: 10px; font-size: 1rem;">Repair Entries</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Vehicle</th>
+                <th>Remarks</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody id="repairsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. VEHICLE HISTORY -->
+    <section id="page-history" class="page">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Vehicle History</h1>
+          <p class="section-sub">Total rent received, total repair cost, and net balance per vehicle</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th>Reg No</th>
+                <th>Bookings</th>
+                <th>Total Rent Received</th>
+                <th>Total Repair Cost</th>
+                <th>Net (Rent - Repair)</th>
+              </tr>
+            </thead>
+            <tbody id="vehicleHistoryBody"></tbody>
           </table>
         </div>
       </div>
@@ -654,207 +887,403 @@
 
   </main>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: BOOKED VEHICLE DETAILS                                         -->
-  <!-- ===================================================================== -->
-  <div id="detailsModal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-xs items-center justify-center p-3 sm:p-5">
-    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] uppercase tracking-wider text-amber-400 font-bold">Rental Details</span>
-          <h3 id="detailsModalTitle" class="text-base sm:text-lg font-extrabold">Booking Details</h3>
-        </div>
-        <button type="button" id="closeDetailsModalBtn" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-sm font-bold">✕</button>
+  <!-- SUBMIT SUCCESS POPUP -->
+  <div class="modal-backdrop" id="successModal">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-head">
+        <div class="modal-title" style="color: var(--success);">Booking Submitted Successfully</div>
+        <button class="close-x" onclick="closeModal('successModal')">&times;</button>
       </div>
-      <div id="detailsModalBody" class="p-5 space-y-3 text-xs sm:text-sm max-h-[75vh] overflow-y-auto custom-scroll"></div>
-      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
-        <button type="button" id="detailsOpenReturnBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
-          Return Vehicle
-        </button>
-        <button type="button" id="detailsDoneBtn" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs">
-          Close
-        </button>
-      </div>
+      <div id="successModalBody" style="font-size: 0.9rem;"></div>
+      <div class="btn-row" id="successModalActions"></div>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: RETURN VEHICLE & KM LIMIT CHECK                                -->
-  <!-- ===================================================================== -->
-  <div id="returnModal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-xs items-center justify-center p-3 sm:p-5">
-    <div class="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Vehicle Return & Odometer Check</span>
-          <h3 id="returnModalTitle" class="text-base sm:text-lg font-extrabold">Return Vehicle</h3>
-        </div>
-        <button type="button" id="closeReturnModalBtn" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-sm font-bold">✕</button>
+  <!-- BOOKED DETAILS MODAL -->
+  <div class="modal-backdrop" id="detailsModal">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal-head">
+        <div class="modal-title">Rental Details</div>
+        <button class="close-x" onclick="closeModal('detailsModal')">&times;</button>
       </div>
+      <div id="detailsModalBody" style="font-size: 0.9rem;"></div>
+    </div>
+  </div>
 
-      <form id="returnForm" class="p-5 space-y-4 text-xs sm:text-sm max-h-[82vh] overflow-y-auto custom-scroll">
-        <div id="returnInfoGrid" class="p-3.5 rounded-2xl bg-slate-100 border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs"></div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label for="retEndKm" class="block font-semibold text-slate-700 mb-1">Return / End KM *</label>
-            <input type="number" id="retEndKm" required min="0" step="1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+  <!-- RETURN VEHICLE & KM MODAL -->
+  <div class="modal-backdrop" id="returnModal">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-head">
+        <div class="modal-title">Return Vehicle &amp; Odometer Check</div>
+        <button class="close-x" onclick="closeModal('returnModal')">&times;</button>
+      </div>
+      <form id="returnForm" onsubmit="handleReturnVehicle(event)">
+        <input type="hidden" id="retBookingId" />
+        <div id="retSummary" style="background: #f8fafc; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 0.86rem;"></div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Return Odometer (KM) *</label>
+            <input type="number" id="retEndKm" min="0" step="any" required oninput="recalcReturnKm()" />
           </div>
-          <div>
-            <label for="retPaidAmount" class="block font-semibold text-slate-700 mb-1">Total Paid Amount</label>
-            <input type="number" id="retPaidAmount" min="0" step="any" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <div class="field">
+            <label>Total Paid Amount</label>
+            <input type="number" id="retPaidAmount" min="0" step="any" oninput="recalcReturnKm()" />
           </div>
         </div>
-
-        <!-- Live KM Limit & Extra KM Alert Box -->
-        <div id="retKmAlertBox" class="p-4 rounded-2xl border-2 transition">
-          <div class="flex items-center justify-between gap-2 mb-2.5">
-            <span id="retKmStatusTitle" class="font-extrabold text-xs uppercase tracking-wide">KM Calculation</span>
-            <span id="retKmBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold"></span>
+        <div id="retKmAlert"></div>
+        <div class="calc-box">
+          <div class="calc-item">
+            <span>Driven KM</span>
+            <strong id="retDrivenKm">0 KM</strong>
           </div>
-          <div id="retKmBreakdown" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs"></div>
+          <div class="calc-item">
+            <span>Extra KM</span>
+            <strong id="retExtraKm">0 KM</strong>
+          </div>
+          <div class="calc-item">
+            <span>Extra KM Charge</span>
+            <strong id="retExtraCharge">0</strong>
+          </div>
+          <div class="calc-item">
+            <span>Final Total</span>
+            <strong id="retFinalTotal">0</strong>
+          </div>
         </div>
-
-        <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2">
-          <button type="button" id="cancelReturnBtn" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs">
-            Cancel
-          </button>
-          <button type="submit" id="confirmReturnBtn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow">
-            Confirm Return & Save
-          </button>
+        <div class="btn-row">
+          <button type="submit" class="btn btn-success" id="btnConfirmReturn">Complete Return</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: AGREEMENT PREVIEW POPUP                                        -->
-  <!-- ===================================================================== -->
-  <div id="agreementModal" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-xs items-center justify-center p-3 sm:p-5">
-    <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden">
-      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] uppercase tracking-wider text-amber-400 font-bold">Rental Agreement Ready</span>
-          <h3 id="agreementModalTitle" class="text-base sm:text-lg font-extrabold">Rental Agreement</h3>
-        </div>
-        <button type="button" id="closeAgreementModalBtn" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-sm font-bold">✕</button>
+  <!-- 1-PAGE AGREEMENT MODAL -->
+  <div class="modal-backdrop" id="agreementModal">
+    <div class="modal">
+      <div class="modal-head no-print">
+        <div class="modal-title">Rental Agreement (1-Page Print / PDF)</div>
+        <button class="close-x" onclick="closeModal('agreementModal')">&times;</button>
       </div>
-      <div class="p-5 bg-slate-50 max-h-[68vh] overflow-y-auto custom-scroll">
-        <div id="modalAgreementText" class="agreement-multilang bg-white border border-slate-200 rounded-2xl p-5 text-xs sm:text-sm text-slate-800 whitespace-pre-line leading-relaxed"></div>
-      </div>
-      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex flex-wrap gap-2">
-          <button type="button" id="modalPrintPdfBtn" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs">
-            Save / Print PDF
-          </button>
-          <button type="button" id="modalWhatsappBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
-            Send via WhatsApp
-          </button>
-        </div>
-        <button type="button" id="modalCloseAgreementBtn" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs">
-          Done
-        </button>
+      <div id="agreementSheetContainer"></div>
+      <div class="btn-row no-print">
+        <button type="button" class="btn btn-primary" onclick="window.print()">Download / Print PDF</button>
+        <button type="button" class="btn btn-success" id="btnAgreementWa">Send WhatsApp Message</button>
       </div>
     </div>
   </div>
 
   <script>
-    /**
-     * =========================================================================
-     * DRIVE-EASE FLEET — RENT-A-VEHICLE WEB APPLICATION
-     * Backend: Google Apps Script Web App
-     * UI Language: Strictly English
-     * Rental Agreement Languages: English, Tamil, Sinhala, Malayalam
-     * =========================================================================
-     */
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwFyv-hpoIUUdMginLOosLMI16AiGTgBNUejm4anwggw6g4MCbSCDV93DwsynXesvB/exec";
 
-    const API_URL = "https://script.google.com/macros/s/AKfycbwwFyv-hpoIUUdMginLOosLMI16AiGTgBNUejm4anwggw6g4MCbSCDV93DwsynXesvB/exec";
-
-    // Initial fallback data matching user's live JSON response
-    const INITIAL_DATA = {
-      vehicles: [
-        { Vehicle_ID: "VEH-001", Vehicle_Name: "Toyota Corolla", Reg_Number: 482910, Type: "Sedan", Daily_Rate: 120, Daily_KM_Limit: 150, Extra_KM_Rate: 2, Current_KM: 45200, Status: "Booked" },
-        { Vehicle_ID: "VEH-002", Vehicle_Name: "Hyundai Tucson", Reg_Number: 619204, Type: "SUV", Daily_Rate: 180, Daily_KM_Limit: 180, Extra_KM_Rate: 3, Current_KM: 28450, Status: "Available" },
-        { Vehicle_ID: "VEH-003", Vehicle_Name: "Nissan Sunny", Reg_Number: 339182, Type: "Sedan", Daily_Rate: 100, Daily_KM_Limit: 150, Extra_KM_Rate: 2, Current_KM: 61900, Status: "Available" }
-      ],
-      bookings: [
-        {
-          Booking_ID: "BKG-1001",
-          Vehicle_ID: "VEH-001",
-          Vehicle_Name: "Toyota Corolla",
-          Reg_Number: 482910,
-          Customer_Name: "Mohammed Ali",
-          Phone: 97455123456,
-          License_No: 28491029384,
-          From_Date: "2026-11-26",
-          To_Date: "2026-11-28",
-          Total_Days: 2,
-          Daily_Rate: 120,
-          Base_Rent: 240,
-          Daily_KM_Limit: 150,
-          Allowed_KM: 300,
-          Extra_KM_Rate: 2,
-          Start_KM: 45200,
-          End_KM: "",
-          Driven_KM: "",
-          Extra_KM: 0,
-          Extra_KM_Charge: 0,
-          Total_Amount: 240,
-          Paid_Amount: 100,
-          Pending_Amount: 140,
-          Payment_Status: "Partial",
-          Booking_Status: "Active",
-          Agreement_Lang: "English"
-        }
-      ],
-      repairs: [
-        {
-          Repair_ID: "REP-001",
-          Vehicle_ID: "VEH-001",
-          Vehicle_Name: "Toyota Corolla",
-          Reg_Number: 482910,
-          Date: "2026-11-10",
-          Remarks: "Engine oil & filter service",
-          Cost: 250
-        }
-      ]
+    let state = {
+      vehicles: [],
+      bookings: [],
+      repairs: []
     };
 
-    const appState = {
-      activeTab: "home",
-      vehicles: structuredClone(INITIAL_DATA.vehicles),
-      bookings: structuredClone(INITIAL_DATA.bookings),
-      repairs: structuredClone(INITIAL_DATA.repairs),
-      selectedDetailsBookingId: null,
-      selectedReturnBookingId: null,
-      latestAgreementPayload: null,
-      charts: {}
+    let homeChart = null;
+    let rentsChart = null;
+    let activeReturnBooking = null;
+
+    const AGREEMENT_TEXT = {
+      English: {
+        title: "VEHICLE RENTAL AGREEMENT",
+        sub: "Simple Rental & Odometer Terms",
+        renter: "Renter",
+        phone: "Contact",
+        license: "License No",
+        vehicle: "Vehicle",
+        period: "Rental Period",
+        rate: "Daily Rate",
+        total: "Total Amount",
+        paid: "Paid",
+        pending: "Pending",
+        allowedKm: "Allowed KM Limit",
+        startKm: "Start Odometer",
+        extraRate: "Extra KM Rate",
+        termsTitle: "Terms & Conditions",
+        terms: [
+          "Any distance driven above the allowed KM limit will be charged at the extra KM rate upon return.",
+          "The renter must return the vehicle safely, cleanly, and on time.",
+          "Traffic fines, tolls, and fuel used during the rental period are the renter's responsibility.",
+          "Do not sublet or hand over the vehicle to unauthorized drivers."
+        ],
+        renterSig: "Renter Signature",
+        ownerSig: "Owner / Authorized Signature"
+      },
+      Tamil: {
+        title: "வாகன வாடகை ஒப்பந்தம்",
+        sub: "எளிய வாடகை மற்றும் கிலோமீட்டர் விதிமுறைகள்",
+        renter: "வாடகைதாரர்",
+        phone: "தொடர்பு எண்",
+        license: "உரிம எண்",
+        vehicle: "வாகனம்",
+        period: "வாடகை காலம்",
+        rate: "நாள் வாடகை",
+        total: "மொத்த தொகை",
+        paid: "செலுத்தியது",
+        pending: "நிலுவை",
+        allowedKm: "அனுமதிக்கப்பட்ட KM",
+        startKm: "ஆரம்ப KM",
+        extraRate: "கூடுதல் KM கட்டணம்",
+        termsTitle: "விதிமுறைகள்",
+        terms: [
+          "அனுமதிக்கப்பட்ட KM வரம்பை விட கூடுதலாக ஓட்டினால், கூடுதல் KM கட்டணம் வசூலிக்கப்படும்.",
+          "வாகனத்தை பாதுகாப்பாகவும் குறித்த நேரத்திலும் திருப்பித் தர வேண்டும்.",
+          "வாடகை கால போக்குவரத்து அபராதம் மற்றும் எரிபொருள் வாடகைதாரரின் பொறுப்பாகும்.",
+          "வாகனத்தை வேறு நபரிடம் ஒப்படைக்கக் கூடாது."
+        ],
+        renterSig: "வாடகைதாரர் கையொப்பம்",
+        ownerSig: "உரிமையாளர் கையொப்பம்"
+      },
+      Sinhala: {
+        title: "වාහන කුලී ගිවිසුම",
+        sub: "සරල කුලී සහ කිලෝමීටර් කොන්දේසි",
+        renter: "කුලීකරු",
+        phone: "දුරකථන",
+        license: "බලපත්‍ර අංකය",
+        vehicle: "වාහනය",
+        period: "කුලී කාලය",
+        rate: "දෛනික ගාස්තුව",
+        total: "මුළු මුදල",
+        paid: "ගෙවූ මුදල",
+        pending: "ශේෂය",
+        allowedKm: "අවසර ලත් KM",
+        startKm: "ආරම්භක KM",
+        extraRate: "අමතර KM ගාස්තුව",
+        termsTitle: "කොන්දේසි",
+        terms: [
+          "අවසර ලත් KM සීමාව ඉක්මවා ධාවනය කරන සෑම අමතර KM සඳහාම ගාස්තු අය කෙරේ.",
+          "වාහනය ආරක්ෂිතව සහ නියමිත වේලාවට ආපසු භාර දිය යුතුය.",
+          "කුලී කාලය තුළ රථවාහන දඩ සහ ඉන්ධන කුලීකරුගේ වගකීම වේ.",
+          "වාහනය වෙනත් අයෙකුට පැවරීම තහනම්ය."
+        ],
+        renterSig: "කුලීකරුගේ අත්සන",
+        ownerSig: "හිමිකරුගේ අත්සන"
+      },
+      Malayalam: {
+        title: "വാഹന വാടക കരാർ",
+        sub: "ലളിതമായ വാടക & കിലോമീറ്റർ വ്യവസ്ഥകൾ",
+        renter: "വാടകയ്ക്ക് എടുക്കുന്നയാൾ",
+        phone: "ഫോൺ നമ്പർ",
+        license: "ലൈസൻസ് നമ്പർ",
+        vehicle: "വാഹനം",
+        period: "കാലയളവ്",
+        rate: "ദിവസ വാടക",
+        total: "ആകെ തുക",
+        paid: "അടച്ച തുക",
+        pending: "ബാക്കി തുക",
+        allowedKm: "അനുവദിച്ച KM",
+        startKm: "തുടക്ക KM",
+        extraRate: "കൂടുതൽ KM നിരക്ക്",
+        termsTitle: "വ്യവസ്ഥകൾ",
+        terms: [
+          "അനുവദിച്ച KM പരിധിയിൽ കൂടുതൽ ഓടിയാൽ ഓരോ അധിക KM-നും നിരക്ക് ഈടാക്കുന്നതാണ്.",
+          "വാഹനം സുരക്ഷിതമായും കൃത്യസമയത്തും തിരികെ നൽകേണ്ടതാണ്.",
+          "വാടക കാലയളവിലെ ട്രാഫിക് പിഴകളും ഇന്ധനച്ചെലവും കസ്റ്റമറുടെ ഉത്തരവാദിത്തമാണ്.",
+          "വാഹനം മറ്റൊരാൾക്ക് കൈമാറാൻ പാടില്ല."
+        ],
+        renterSig: "കസ്റ്റമറുടെ ഒപ്പ്",
+        ownerSig: "ഉടമയുടെ ഒപ്പ്"
+      }
     };
 
-    // --- Toast Helper ---
-    function showToast(message, symbol = "✅") {
-      const toast = document.getElementById("statusToast");
-      document.getElementById("toastSymbol").textContent = symbol;
-      document.getElementById("toastText").textContent = message;
-      toast.classList.remove("hidden");
-      toast.classList.add("flex");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => {
-        toast.classList.add("hidden");
-        toast.classList.remove("flex");
-      }, 4000);
-    }
-
-    document.getElementById("closeToastBtn").addEventListener("click", () => {
-      document.getElementById("statusToast").classList.add("hidden");
-      document.getElementById("statusToast").classList.remove("flex");
+    // Navigation
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const page = btn.dataset.page;
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById("page-" + page).classList.add("active");
+        if (page === "home" || page === "rents") renderCharts();
+      });
     });
 
-    function formatAmount(val) {
-      const n = Number(val || 0);
-      return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
     }
 
-    function calcDays(fromStr, toStr) {
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function fmtNum(n) {
+      const num = Number(n || 0);
+      return num.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    }
+
+    function esc(str) {
+      return String(str ?? "").replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
+    }
+
+    async function loadAllData(showAlert = false) {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getAll&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.success) {
+          state.vehicles = data.vehicles || [];
+          state.bookings = data.bookings || [];
+          state.repairs = data.repairs || [];
+          renderAll();
+          if (showAlert) alert("Data refreshed from Google Sheet.");
+        }
+      } catch (err) {
+        console.error("Load error:", err);
+      }
+    }
+
+    async function postAction(action, payload) {
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action, payload })
+        });
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch {
+          return { success: true };
+        }
+      } catch (err) {
+        // Fallback for strict browser CORS handling on GAS redirects
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action, payload })
+        });
+        return { success: true, assumed: true };
+      }
+    }
+
+    function renderAll() {
+      renderHome();
+      renderVehiclesPage();
+      populateBookingVehicles();
+      populateRepairVehicles();
+      renderFleetStatus();
+      renderRentsPage();
+      renderRepairsPage();
+      renderHistoryPage();
+      renderCharts();
+    }
+
+    function renderHome() {
+      const totalV = state.vehicles.length;
+      const availV = state.vehicles.filter(v => String(v.Status).toLowerCase() === "available").length;
+      const bookedV = state.vehicles.filter(v => String(v.Status).toLowerCase() === "booked").length;
+      const activeB = state.bookings.filter(b => String(b.Booking_Status).toLowerCase() === "active").length;
+
+      const rentReceived = state.bookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
+      const pendingRent = state.bookings.reduce((s, b) => s + Number(b.Pending_Amount || 0), 0);
+
+      document.getElementById("statTotalVehicles").textContent = totalV;
+      document.getElementById("statAvailSplit").textContent = `${availV} Available · ${bookedV} Booked`;
+      document.getElementById("statActiveBookings").textContent = activeB;
+      document.getElementById("statRentReceived").textContent = fmtNum(rentReceived);
+      document.getElementById("statPendingRent").textContent = fmtNum(pendingRent);
+
+      const recent = [...state.bookings].reverse().slice(0, 6);
+      const tbody = document.getElementById("homeRecentBookings");
+      if (!recent.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">No bookings yet</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = recent.map(b => {
+        const isActive = String(b.Booking_Status).toLowerCase() === "active";
+        return `
+          <tr>
+            <td><strong>${esc(b.Booking_ID)}</strong></td>
+            <td>${esc(b.Vehicle_Name)}</td>
+            <td>${esc(b.Customer_Name)}</td>
+            <td><span class="badge ${isActive ? "badge-warn" : "badge-ok"}">${esc(b.Booking_Status)}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderVehiclesPage() {
+      const tbody = document.getElementById("vehiclesListBody");
+      if (!state.vehicles.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);">No vehicles added yet</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.vehicles.map(v => {
+        const avail = String(v.Status).toLowerCase() === "available";
+        return `
+          <tr>
+            <td>${esc(v.Vehicle_ID)}</td>
+            <td><strong>${esc(v.Vehicle_Name)}</strong></td>
+            <td>${esc(v.Reg_Number)}</td>
+            <td>${fmtNum(v.Daily_Rate)}</td>
+            <td>${fmtNum(v.Daily_KM_Limit)} KM</td>
+            <td>${fmtNum(v.Extra_KM_Rate)}</td>
+            <td>${fmtNum(v.Current_KM)} KM</td>
+            <td><span class="badge ${avail ? "badge-ok" : "badge-warn"}">${esc(v.Status)}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function handleAddVehicle(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btnAddVehicle");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      const payload = {
+        Vehicle_Name: document.getElementById("vehName").value.trim(),
+        Reg_Number: document.getElementById("vehReg").value.trim(),
+        Type: document.getElementById("vehType").value,
+        Daily_Rate: Number(document.getElementById("vehRate").value || 0),
+        Daily_KM_Limit: Number(document.getElementById("vehKmLimit").value || 0),
+        Extra_KM_Rate: Number(document.getElementById("vehExtraKmRate").value || 0),
+        Current_KM: Number(document.getElementById("vehStartKm").value || 0)
+      };
+
+      const res = await postAction("addVehicle", payload);
+      btn.disabled = false;
+      btn.textContent = "Save Vehicle";
+
+      if (res.success) {
+        document.getElementById("addVehicleForm").reset();
+        document.getElementById("vehKmLimit").value = 150;
+        document.getElementById("vehExtraKmRate").value = 2;
+        await loadAllData(false);
+        alert("Vehicle added successfully.");
+      } else {
+        alert("Failed to add vehicle: " + (res.message || "Unknown error"));
+      }
+    }
+
+    function populateBookingVehicles(preselectId = "") {
+      const sel = document.getElementById("bkgVehicle");
+      const avail = state.vehicles.filter(v => String(v.Status).toLowerCase() === "available");
+      if (!avail.length) {
+        sel.innerHTML = `<option value="">No available vehicles</option>`;
+        return;
+      }
+      sel.innerHTML = `<option value="">-- Choose Vehicle --</option>` + avail.map(v =>
+        `<option value="${esc(v.Vehicle_ID)}" ${v.Vehicle_ID === preselectId ? "selected" : ""}>${esc(v.Vehicle_Name)} (${esc(v.Reg_Number)})</option>`
+      ).join("");
+      if (preselectId) onBookingVehicleChange();
+    }
+
+    function onBookingVehicleChange() {
+      const vid = document.getElementById("bkgVehicle").value;
+      const v = state.vehicles.find(item => String(item.Vehicle_ID) === String(vid));
+      if (!v) return;
+      document.getElementById("bkgRate").value = v.Daily_Rate ?? 0;
+      document.getElementById("bkgKmLimit").value = v.Daily_KM_Limit ?? 150;
+      document.getElementById("bkgExtraKmRate").value = v.Extra_KM_Rate ?? 0;
+      document.getElementById("bkgStartKm").value = v.Current_KM ?? 0;
+      recalcBooking();
+    }
+
+    function calcDaysBetween(fromStr, toStr) {
       if (!fromStr || !toStr) return 1;
       const d1 = new Date(fromStr + "T00:00:00");
       const d2 = new Date(toStr + "T00:00:00");
@@ -862,1080 +1291,527 @@
       return diff > 0 ? diff : 1;
     }
 
-    function setSyncStatus(label, isOk = true) {
-      const badge = document.getElementById("syncBadge");
-      badge.textContent = label;
-      badge.className = isOk
-        ? "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0"
-        : "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0";
+    function recalcBooking() {
+      const days = calcDaysBetween(document.getElementById("bkgFrom").value, document.getElementById("bkgTo").value);
+      const rate = Number(document.getElementById("bkgRate").value || 0);
+      const kmLimit = Number(document.getElementById("bkgKmLimit").value || 0);
+      const paid = Number(document.getElementById("bkgPaid").value || 0);
+
+      const total = days * rate;
+      const pending = Math.max(0, total - paid);
+      const allowedKm = days * kmLimit;
+
+      document.getElementById("calcDays").textContent = days;
+      document.getElementById("calcTotal").textContent = fmtNum(total);
+      document.getElementById("calcPending").textContent = fmtNum(pending);
+      document.getElementById("calcAllowedKm").textContent = `${fmtNum(allowedKm)} KM`;
     }
 
-    // --- Backend API Communication ---
-    async function fetchLiveData(showFeedback = false) {
-      const icon = document.getElementById("refreshIcon");
-      if (icon) icon.textContent = "⏳";
-      try {
-        const res = await fetch(`${API_URL}?action=getAll`, { method: "GET", cache: "no-store" });
-        const data = await res.json();
-        if (data && data.success) {
-          if (Array.isArray(data.vehicles)) appState.vehicles = data.vehicles;
-          if (Array.isArray(data.bookings)) appState.bookings = data.bookings;
-          if (Array.isArray(data.repairs)) appState.repairs = data.repairs;
-          setSyncStatus("Live Sheet Synced", true);
-          if (showFeedback) showToast("Live data refreshed from Google Sheet.", "🔄");
-          renderAllSections();
-        } else {
-          setSyncStatus("Offline / Fallback", false);
-          if (showFeedback) showToast("Using cached data.", "ℹ️");
-        }
-      } catch (err) {
-        setSyncStatus("Local / Fallback Mode", false);
-        if (showFeedback) showToast("Could not reach server; showing local data.", "⚠️");
-      } finally {
-        if (icon) icon.textContent = "🔄";
-      }
-    }
-
-    async function postToBackend(action, payload) {
-      try {
-        await fetch(API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action, payload })
-        });
-        setSyncStatus("Synced to Sheet", true);
-        setTimeout(() => fetchLiveData(false), 1200);
-        return true;
-      } catch (err) {
-        setSyncStatus("Local Saved", false);
-        return false;
-      }
-    }
-
-    // --- Navigation ---
-    function switchTab(tabId) {
-      appState.activeTab = tabId;
-      document.querySelectorAll(".app-section").forEach(sec => sec.classList.add("hidden"));
-      const targetSec = document.getElementById(`section-${tabId}`);
-      if (targetSec) targetSec.classList.remove("hidden");
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        const active = btn.getAttribute("data-tab") === tabId;
-        btn.className = active
-          ? "nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 bg-amber-500 text-slate-950 font-bold shadow"
-          : "nav-btn px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 text-slate-300 hover:text-white hover:bg-slate-800";
-      });
-
-      if (tabId === "home") renderHomeCharts();
-      if (tabId === "rents") renderRentsCharts();
-      if (tabId === "booking") {
-        populateBookingVehicleDropdown();
-        updateBookingCalculator();
-      }
-    }
-
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.addEventListener("click", () => switchTab(btn.getAttribute("data-tab")));
-    });
-
-    document.querySelectorAll(".goto-btn").forEach(btn => {
-      btn.addEventListener("click", () => switchTab(btn.getAttribute("data-goto")));
-    });
-
-    document.getElementById("refreshDataBtn").addEventListener("click", () => fetchLiveData(true));
-
-    // --- Render All Sections ---
-    function renderAllSections() {
-      renderHomeStats();
-      renderVehiclesTable();
-      populateBookingVehicleDropdown();
-      populateRepairVehicleDropdown();
-      renderFleetStatusTables();
-      renderRentsSection();
-      renderRepairsSection();
-      renderVehicleHistorySection();
-
-      if (appState.activeTab === "home") renderHomeCharts();
-      if (appState.activeTab === "rents") renderRentsCharts();
-    }
-
-    // --- 1. HOME STATS & CHARTS ---
-    function renderHomeStats() {
-      const totalVeh = appState.vehicles.length;
-      const activeBookings = appState.bookings.filter(b => String(b.Booking_Status) === "Active");
-      const bookedCount = activeBookings.length;
-      const availableCount = Math.max(0, totalVeh - bookedCount);
-
-      const totalReceived = appState.bookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
-      const totalPending = appState.bookings.reduce((s, b) => {
-        const tot = Number(b.Total_Amount || 0);
-        const paid = Number(b.Paid_Amount || 0);
-        const pend = b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-          ? Number(b.Pending_Amount)
-          : Math.max(0, tot - paid);
-        return s + Math.max(0, pend);
-      }, 0);
-
-      document.getElementById("statTotalVehicles").textContent = totalVeh;
-      document.getElementById("statFleetSplit").textContent = `${bookedCount} Booked • ${availableCount} Available`;
-      document.getElementById("statActiveBookings").textContent = bookedCount;
-      document.getElementById("statReceivedRent").textContent = formatAmount(totalReceived);
-      document.getElementById("statPendingRent").textContent = formatAmount(totalPending);
-    }
-
-    function destroyChart(key) {
-      if (appState.charts[key]) {
-        appState.charts[key].destroy();
-        appState.charts[key] = null;
-      }
-    }
-
-    function renderHomeCharts() {
-      const ctx1 = document.getElementById("homePendingReceivedChart");
-      const ctx2 = document.getElementById("homeMonthlyRentChart");
-      if (!ctx1 || !ctx2 || !window.Chart) return;
-
-      destroyChart("homePR");
-      destroyChart("homeMonthly");
-
-      const labels = appState.bookings.map(b => `${b.Vehicle_Name} (${b.Booking_ID})`);
-      const receivedArr = appState.bookings.map(b => Number(b.Paid_Amount || 0));
-      const pendingArr = appState.bookings.map(b => {
-        const tot = Number(b.Total_Amount || 0);
-        const paid = Number(b.Paid_Amount || 0);
-        return b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-          ? Number(b.Pending_Amount)
-          : Math.max(0, tot - paid);
-      });
-
-      appState.charts.homePR = new Chart(ctx1, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            { label: "Received Rent", data: receivedArr, backgroundColor: "#10b981", borderRadius: 6 },
-            { label: "Pending Rent", data: pendingArr, backgroundColor: "#f43f5e", borderRadius: 6 }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-
-      // Group by YYYY-MM from From_Date
-      const monthMap = {};
-      appState.bookings.forEach(b => {
-        const ym = String(b.From_Date || "2026-11").slice(0, 7);
-        if (!monthMap[ym]) monthMap[ym] = { billed: 0, received: 0 };
-        monthMap[ym].billed += Number(b.Total_Amount || 0);
-        monthMap[ym].received += Number(b.Paid_Amount || 0);
-      });
-      const months = Object.keys(monthMap).sort();
-
-      appState.charts.homeMonthly = new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: months,
-          datasets: [
-            {
-              label: "Total Rent",
-              data: months.map(m => monthMap[m].billed),
-              borderColor: "#0f172a",
-              backgroundColor: "rgba(15, 23, 42, 0.12)",
-              tension: 0.3,
-              fill: true
-            },
-            {
-              label: "Received Rent",
-              data: months.map(m => monthMap[m].received),
-              borderColor: "#f59e0b",
-              backgroundColor: "rgba(245, 158, 11, 0.15)",
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-    }
-
-    // --- 2. ADD VEHICLE ---
-    function renderVehiclesTable() {
-      const tbody = document.getElementById("vehiclesTableBody");
-      document.getElementById("vehicleCountBadge").textContent = `${appState.vehicles.length} Vehicles`;
-
-      tbody.innerHTML = appState.vehicles.map(v => {
-        const isBooked = String(v.Status) === "Booked";
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3 pr-2">
-              <div class="font-bold text-slate-900">${v.Vehicle_Name}</div>
-              <div class="text-xs text-slate-500">Reg: ${v.Reg_Number} • ${v.Type}</div>
-            </td>
-            <td class="py-3 px-2 font-bold text-slate-800">${formatAmount(v.Daily_Rate)}</td>
-            <td class="py-3 px-2">
-              <div class="font-semibold text-slate-800">${v.Daily_KM_Limit} KM/day</div>
-              <div class="text-[11px] text-slate-500">+${formatAmount(v.Extra_KM_Rate)}/KM</div>
-            </td>
-            <td class="py-3 px-2 font-semibold text-slate-700">${Number(v.Current_KM || 0).toLocaleString()} KM</td>
-            <td class="py-3 pl-2 text-right">
-              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${
-                isBooked ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
-              }">${v.Status}</span>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    document.getElementById("addVehicleForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const payload = {
-        Vehicle_Name: document.getElementById("vehName").value.trim(),
-        Reg_Number: document.getElementById("vehRegNo").value.trim(),
-        Type: document.getElementById("vehType").value,
-        Daily_Rate: Number(document.getElementById("vehDailyRate").value || 0),
-        Daily_KM_Limit: Number(document.getElementById("vehDailyKmLimit").value || 150),
-        Extra_KM_Rate: Number(document.getElementById("vehExtraKmRate").value || 0),
-        Current_KM: Number(document.getElementById("vehCurrentKm").value || 0)
-      };
-
-      const localId = "VEH-" + String(appState.vehicles.length + 1).padStart(3, "0");
-      appState.vehicles.push({ Vehicle_ID: localId, ...payload, Status: "Available" });
-      e.target.reset();
-      document.getElementById("vehDailyKmLimit").value = 150;
-      document.getElementById("vehExtraKmRate").value = 2;
-
-      renderAllSections();
-      showToast(`Vehicle "${payload.Vehicle_Name}" added.`, "🚗");
-      await postToBackend("addVehicle", payload);
-    });
-
-    // --- 3. BOOKING PAGE & MULTI-LANGUAGE AGREEMENT ---
-    function populateBookingVehicleDropdown(preferredVehicleId = null) {
-      const sel = document.getElementById("bkVehicleId");
-      if (!sel) return;
-      const available = appState.vehicles.filter(v => String(v.Status) !== "Booked");
-      const list = available.length > 0 ? available : appState.vehicles;
-
-      sel.innerHTML = list.map(v => `
-        <option value="${v.Vehicle_ID}">${v.Vehicle_Name} (Reg: ${v.Reg_Number}) — ${v.Status}</option>
-      `).join("");
-
-      if (preferredVehicleId && list.some(v => String(v.Vehicle_ID) === String(preferredVehicleId))) {
-        sel.value = preferredVehicleId;
-      }
-      syncBookingFromSelectedVehicle();
-    }
-
-    function syncBookingFromSelectedVehicle() {
-      const vehId = document.getElementById("bkVehicleId").value;
-      const veh = appState.vehicles.find(v => String(v.Vehicle_ID) === String(vehId));
-      if (!veh) return;
-
-      document.getElementById("bkDailyRate").value = veh.Daily_Rate ?? 100;
-      document.getElementById("bkDailyKmLimit").value = veh.Daily_KM_Limit ?? 150;
-      document.getElementById("bkExtraKmRate").value = veh.Extra_KM_Rate ?? 2;
-      document.getElementById("bkStartKm").value = veh.Current_KM ?? 0;
-
-      if (!document.getElementById("bkFromDate").value) {
-        document.getElementById("bkFromDate").value = "2026-11-26";
-      }
-      if (!document.getElementById("bkToDate").value) {
-        document.getElementById("bkToDate").value = "2026-11-28";
-      }
-      updateBookingCalculator();
-    }
-
-    function getBookingFormState() {
-      const vehId = document.getElementById("bkVehicleId").value;
-      const veh = appState.vehicles.find(v => String(v.Vehicle_ID) === String(vehId)) || {};
-      const fromDate = document.getElementById("bkFromDate").value || "2026-11-26";
-      const toDate = document.getElementById("bkToDate").value || "2026-11-28";
-      const customerName = document.getElementById("bkCustomerName").value.trim() || "Customer";
-      const phone = document.getElementById("bkPhone").value.trim() || "";
-      const licenseNo = document.getElementById("bkLicenseNo").value.trim() || "";
-      const dailyRate = Number(document.getElementById("bkDailyRate").value || 0);
-      const dailyKmLimit = Number(document.getElementById("bkDailyKmLimit").value || 0);
-      const extraKmRate = Number(document.getElementById("bkExtraKmRate").value || 0);
-      const startKm = Number(document.getElementById("bkStartKm").value || 0);
-      const paidAmount = Number(document.getElementById("bkPaidAmount").value || 0);
-      const agreementLang = document.getElementById("bkAgreementLang").value || "English";
-
-      const totalDays = calcDays(fromDate, toDate);
-      const allowedKm = totalDays * dailyKmLimit;
-      const totalAmount = totalDays * dailyRate;
-      const pendingAmount = Math.max(0, totalAmount - paidAmount);
+    function getCurrentBookingDraft() {
+      const vid = document.getElementById("bkgVehicle").value;
+      const veh = state.vehicles.find(v => String(v.Vehicle_ID) === String(vid)) || {};
+      const days = calcDaysBetween(document.getElementById("bkgFrom").value, document.getElementById("bkgTo").value);
+      const rate = Number(document.getElementById("bkgRate").value || 0);
+      const kmLimit = Number(document.getElementById("bkgKmLimit").value || 0);
+      const extraRate = Number(document.getElementById("bkgExtraKmRate").value || 0);
+      const startKm = Number(document.getElementById("bkgStartKm").value || 0);
+      const paid = Number(document.getElementById("bkgPaid").value || 0);
+      const total = days * rate;
+      const pending = Math.max(0, total - paid);
 
       return {
-        Vehicle_ID: veh.Vehicle_ID || vehId,
+        Booking_ID: "NEW",
+        Vehicle_ID: vid,
         Vehicle_Name: veh.Vehicle_Name || "Vehicle",
         Reg_Number: veh.Reg_Number || "",
-        Customer_Name: customerName,
-        Phone: phone,
-        License_No: licenseNo,
-        From_Date: fromDate,
-        To_Date: toDate,
-        Total_Days: totalDays,
-        Daily_Rate: dailyRate,
-        Base_Rent: totalAmount,
-        Daily_KM_Limit: dailyKmLimit,
-        Allowed_KM: allowedKm,
-        Extra_KM_Rate: extraKmRate,
+        Customer_Name: document.getElementById("bkgCustomer").value.trim(),
+        Phone: document.getElementById("bkgPhone").value.trim(),
+        License_No: document.getElementById("bkgLicense").value.trim(),
+        From_Date: document.getElementById("bkgFrom").value,
+        To_Date: document.getElementById("bkgTo").value,
+        Total_Days: days,
+        Daily_Rate: rate,
+        Daily_KM_Limit: kmLimit,
+        Allowed_KM: days * kmLimit,
+        Extra_KM_Rate: extraRate,
         Start_KM: startKm,
-        Total_Amount: totalAmount,
-        Paid_Amount: paidAmount,
-        Pending_Amount: pendingAmount,
-        Agreement_Lang: agreementLang
+        Total_Amount: total,
+        Paid_Amount: paid,
+        Pending_Amount: pending,
+        Agreement_Lang: document.getElementById("bkgLang").value || "English"
       };
     }
 
-    function buildAgreementDocumentText(d) {
-      const lang = d.Agreement_Lang || "English";
-      if (lang === "Tamil") {
-        return [
-          "==================================================",
-          "            வாகன வாடகை ஒப்பந்தம் (RENTAL AGREEMENT)",
-          "==================================================",
-          `வாடிக்கையாளர் பெயர் : ${d.Customer_Name}`,
-          `தொலைபேசி எண்      : ${d.Phone || "-"}`,
-          `உரிம எண் (License) : ${d.License_No || "-"}`,
-          "--------------------------------------------------",
-          `வாகனம்             : ${d.Vehicle_Name} (Reg: ${d.Reg_Number})`,
-          `தொடங்கும் தேதி      : ${d.From_Date}`,
-          `முடியும் தேதி        : ${d.To_Date} (${d.Total_Days} நாள்)`,
-          `தினசரி கட்டணம்     : ${formatAmount(d.Daily_Rate)} / நாள்`,
-          `மொத்த வாடகை        : ${formatAmount(d.Total_Amount)}`,
-          `செலுத்தப்பட்டது     : ${formatAmount(d.Paid_Amount)}`,
-          `நிலுவை தொகை       : ${formatAmount(d.Pending_Amount)}`,
-          "--------------------------------------------------",
-          `அனுமதிக்கப்பட்ட KM   : ${d.Allowed_KM} KM (${d.Daily_KM_Limit} KM / நாள்)`,
-          `தொடக்க KM மீட்டர்    : ${d.Start_KM} KM`,
-          `கூடுதல் KM கட்டணம்   : ${formatAmount(d.Extra_KM_Rate)} / கூடுதல் KM`,
-          "--------------------------------------------------",
-          "விதிமுறைகள்:",
-          "1. அனுமதிக்கப்பட்ட KM-க்கு மேல் சென்றால் கூடுதல் கட்டணம் வசூலிக்கப்படும்.",
-          "2. வாகனம் பாதுகாப்பாகவும் சரியான நேரத்திலும் திருப்பித் தரப்பட வேண்டும்.",
-          "3. போக்குவரத்து அபராதங்கள் வாடிக்கையாளருக்கு உரியவை.",
-          "",
-          "வாடிக்கையாளர் கையொப்பம் : _______________________",
-          "உரிமையாளர் கையொப்பம்   : _______________________"
-        ].join("\n");
-      }
-
-      if (lang === "Sinhala") {
-        return [
-          "==================================================",
-          "         වාහන කුලී ගිවිසුම (RENTAL AGREEMENT)",
-          "==================================================",
-          `පාරිභෝගික නම       : ${d.Customer_Name}`,
-          `දුරකථන අංකය       : ${d.Phone || "-"}`,
-          `බලපත්‍ර අංකය       : ${d.License_No || "-"}`,
-          "--------------------------------------------------",
-          `වාහනය              : ${d.Vehicle_Name} (Reg: ${d.Reg_Number})`,
-          `ආරම්භක දිනය       : ${d.From_Date}`,
-          `අවසන් දිනය         : ${d.To_Date} (දින ${d.Total_Days})`,
-          `දෛනික ගාස්තුව      : ${formatAmount(d.Daily_Rate)} / දිනට`,
-          `මුළු කුලිය          : ${formatAmount(d.Total_Amount)}`,
-          `ගෙවූ මුදල          : ${formatAmount(d.Paid_Amount)}`,
-          `හිඟ මුදල           : ${formatAmount(d.Pending_Amount)}`,
-          "--------------------------------------------------",
-          `අවසර ලත් KM සීමාව  : ${d.Allowed_KM} KM (${d.Daily_KM_Limit} KM / දිනට)`,
-          `ආරම්භක KM          : ${d.Start_KM} KM`,
-          `අමතර KM ගාස්තුව     : ${formatAmount(d.Extra_KM_Rate)} / KM`,
-          "--------------------------------------------------",
-          "කොන්දේසි:",
-          "1. අවසර ලත් KM සීමාව ඉක්මවන සෑම KM එකකටම අමතර ගාස්තු අය කෙරේ.",
-          "2. වාහනය ආරක්ෂිතව සහ නියමිත වේලාවට භාර දිය යුතුය.",
-          "3. රථවාහන දඩ මුදල් පාරිභෝගිකයා විසින් දරනු ලැබේ.",
-          "",
-          "පාරිභෝගික අත්සන    : _______________________",
-          "හිමිකරුගේ අත්සන     : _______________________"
-        ].join("\n");
-      }
-
-      if (lang === "Malayalam") {
-        return [
-          "==================================================",
-          "         വാഹന വാടക കരാർ (RENTAL AGREEMENT)",
-          "==================================================",
-          `കസ്റ്റമറുടെ പേര്      : ${d.Customer_Name}`,
-          `ഫോൺ നമ്പർ          : ${d.Phone || "-"}`,
-          `ലൈസൻസ് നമ്പർ       : ${d.License_No || "-"}`,
-          "--------------------------------------------------",
-          `വാഹനം              : ${d.Vehicle_Name} (Reg: ${d.Reg_Number})`,
-          `തുടങ്ങുന്ന തീയതി     : ${d.From_Date}`,
-          `തിരികെ നൽകേണ്ട തീയതി : ${d.To_Date} (${d.Total_Days} ദിവസം)`,
-          `ദിവസ വാടക          : ${formatAmount(d.Daily_Rate)} / ദിവസം`,
-          `ആകെ വാടക തുക       : ${formatAmount(d.Total_Amount)}`,
-          `അടച്ച തുക           : ${formatAmount(d.Paid_Amount)}`,
-          `ബാക്കി തുക          : ${formatAmount(d.Pending_Amount)}`,
-          "--------------------------------------------------",
-          `അനുവദിച്ച KM പരിധി   : ${d.Allowed_KM} KM (${d.Daily_KM_Limit} KM / ദിവസം)`,
-          `കൈമാറുമ്പോഴത്തെ KM  : ${d.Start_KM} KM`,
-          `കൂടുതൽ KM നിരക്ക്     : ${formatAmount(d.Extra_KM_Rate)} / ഓരോ KM-നും`,
-          "--------------------------------------------------",
-          "വ്യവസ്ഥകൾ:",
-          "1. അനുവദിച്ച KM പരിധിയിൽ കൂടുതൽ ഓടിയാൽ അധിക നിരക്ക് നൽകേണ്ടതാണ്.",
-          "2. വാഹനം സുരക്ഷിതമായും കൃത്യസമയത്തും തിരികെ ഏൽപ്പിക്കേണ്ടതാണ്.",
-          "3. ട്രാഫിക് പിഴകൾ കസ്റ്റമറുടെ ഉത്തരവാദിത്തമായിരിക്കും.",
-          "",
-          "കസ്റ്റമറുടെ ഒപ്പ്       : _______________________",
-          "ഉടമയുടെ ഒപ്പ്         : _______________________"
-        ].join("\n");
-      }
-
-      // Default: English
-      return [
-        "==================================================",
-        "            SIMPLE VEHICLE RENTAL AGREEMENT",
-        "==================================================",
-        `Customer Name      : ${d.Customer_Name}`,
-        `Contact Number     : ${d.Phone || "-"}`,
-        `License Number     : ${d.License_No || "-"}`,
-        "--------------------------------------------------",
-        `Vehicle            : ${d.Vehicle_Name} (Reg: ${d.Reg_Number})`,
-        `From Date          : ${d.From_Date}`,
-        `To Date            : ${d.To_Date} (${d.Total_Days} day(s))`,
-        `Daily Rate         : ${formatAmount(d.Daily_Rate)} / day`,
-        `Total Amount       : ${formatAmount(d.Total_Amount)}`,
-        `Paid Amount        : ${formatAmount(d.Paid_Amount)}`,
-        `Pending Amount     : ${formatAmount(d.Pending_Amount)}`,
-        "--------------------------------------------------",
-        `Allowed KM Limit   : ${d.Allowed_KM} KM (${d.Daily_KM_Limit} KM / day)`,
-        `Start Odometer     : ${d.Start_KM} KM`,
-        `Extra KM Rate      : ${formatAmount(d.Extra_KM_Rate)} / extra KM`,
-        "--------------------------------------------------",
-        "Simple Terms & Conditions:",
-        "1. Any distance driven above the allowed KM limit will be charged extra upon return.",
-        "2. Renter must return the vehicle safely and on time.",
-        "3. Traffic fines and fuel during rental are the renter's responsibility.",
-        "",
-        "Renter Signature   : _______________________",
-        "Owner Signature    : _______________________"
-      ].join("\n");
-    }
-
-    function updateBookingCalculator() {
-      const d = getBookingFormState();
-      document.getElementById("bkCalcDays").textContent = `${d.Total_Days} Day(s)`;
-      document.getElementById("bkCalcAllowedKm").textContent = `${d.Allowed_KM} KM`;
-      document.getElementById("bkCalcTotal").textContent = formatAmount(d.Total_Amount);
-      document.getElementById("bkCalcPending").textContent = formatAmount(d.Pending_Amount);
-      document.getElementById("liveLangLabel").textContent = d.Agreement_Lang;
-
-      const text = buildAgreementDocumentText(d);
-      document.getElementById("printableAgreementArea").textContent = text;
-      appState.latestAgreementPayload = { ...d, agreementText: text };
-    }
-
-    ["bkFromDate", "bkToDate", "bkCustomerName", "bkPhone", "bkLicenseNo", "bkDailyRate", "bkDailyKmLimit", "bkExtraKmRate", "bkStartKm", "bkPaidAmount", "bkAgreementLang"].forEach(id => {
-      document.getElementById(id).addEventListener("input", updateBookingCalculator);
-      document.getElementById(id).addEventListener("change", updateBookingCalculator);
-    });
-
-    document.getElementById("bkVehicleId").addEventListener("change", syncBookingFromSelectedVehicle);
-
-    function openAgreementPopup(payload) {
-      appState.latestAgreementPayload = payload;
-      document.getElementById("agreementModalTitle").textContent = `Rental Agreement (${payload.Agreement_Lang || "English"})`;
-      document.getElementById("modalAgreementText").textContent = payload.agreementText || buildAgreementDocumentText(payload);
-      const modal = document.getElementById("agreementModal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-    }
-
-    document.getElementById("previewAgreementBtn").addEventListener("click", () => {
-      updateBookingCalculator();
-      openAgreementPopup(appState.latestAgreementPayload);
-    });
-
-    function triggerPrintPdf() {
-      window.print();
-    }
-
-    function triggerJsPdfDownload() {
-      try {
-        if (!window.jspdf || !window.jspdf.jsPDF) {
-          window.print();
-          return;
-        }
-        const d = appState.latestAgreementPayload || getBookingFormState();
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const lines = doc.splitTextToSize(d.agreementText || buildAgreementDocumentText(d), 175);
-        doc.setFontSize(10);
-        doc.text(lines, 16, 18);
-        const safeCust = (d.Customer_Name || "Rental").replace(/[^a-zA-Z0-9]/g, "_");
-        doc.save(`Rental_Agreement_${safeCust}_${d.Agreement_Lang || "English"}.pdf`);
-        showToast("Agreement PDF downloaded.", "⬇️");
-      } catch (e) {
-        window.print();
-      }
-    }
-
-    function sendAgreementOnWhatsApp() {
-      const d = appState.latestAgreementPayload || getBookingFormState();
-      const digits = String(d.Phone || "").replace(/[^\d]/g, "");
-      const summary = [
-        `Rental Agreement (${d.Agreement_Lang})`,
-        `Customer: ${d.Customer_Name}`,
-        `Vehicle: ${d.Vehicle_Name} (${d.Reg_Number})`,
-        `Period: ${d.From_Date} to ${d.To_Date} (${d.Total_Days} day(s))`,
-        `Start KM: ${d.Start_KM} KM | Allowed KM: ${d.Allowed_KM} KM`,
-        `Extra KM Rate: ${formatAmount(d.Extra_KM_Rate)}/KM`,
-        `Total: ${formatAmount(d.Total_Amount)} | Paid: ${formatAmount(d.Paid_Amount)} | Pending: ${formatAmount(d.Pending_Amount)}`
-      ].join("\n");
-
-      const url = digits
-        ? `https://wa.me/${digits}?text=${encodeURIComponent(summary)}`
-        : `https://wa.me/?text=${encodeURIComponent(summary)}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-      showToast(`Opening WhatsApp for ${d.Phone || "customer"}...`, "💬");
-    }
-
-    document.getElementById("printSavePdfBtn").addEventListener("click", triggerPrintPdf);
-    document.getElementById("downloadJsPdfBtn").addEventListener("click", triggerJsPdfDownload);
-    document.getElementById("shareWhatsappBtn").addEventListener("click", sendAgreementOnWhatsApp);
-    document.getElementById("modalPrintPdfBtn").addEventListener("click", triggerPrintPdf);
-    document.getElementById("modalWhatsappBtn").addEventListener("click", sendAgreementOnWhatsApp);
-
-    function closeAgreementPopup() {
-      const m = document.getElementById("agreementModal");
-      m.classList.add("hidden");
-      m.classList.remove("flex");
-    }
-    document.getElementById("closeAgreementModalBtn").addEventListener("click", closeAgreementPopup);
-    document.getElementById("modalCloseAgreementBtn").addEventListener("click", closeAgreementPopup);
-
-    document.getElementById("bookingForm").addEventListener("submit", async e => {
+    async function handleCreateBooking(e) {
       e.preventDefault();
-      updateBookingCalculator();
-      const d = getBookingFormState();
-      const bookingId = "BKG-" + String(1001 + appState.bookings.length);
-      const paymentStatus = d.Pending_Amount <= 0 ? "Paid" : (d.Paid_Amount > 0 ? "Partial" : "Pending");
-
-      const newBooking = {
-        Booking_ID: bookingId,
-        Vehicle_ID: d.Vehicle_ID,
-        Vehicle_Name: d.Vehicle_Name,
-        Reg_Number: d.Reg_Number,
-        Customer_Name: d.Customer_Name,
-        Phone: d.Phone,
-        License_No: d.License_No,
-        From_Date: d.From_Date,
-        To_Date: d.To_Date,
-        Total_Days: d.Total_Days,
-        Daily_Rate: d.Daily_Rate,
-        Base_Rent: d.Base_Rent,
-        Daily_KM_Limit: d.Daily_KM_Limit,
-        Allowed_KM: d.Allowed_KM,
-        Extra_KM_Rate: d.Extra_KM_Rate,
-        Start_KM: d.Start_KM,
-        End_KM: "",
-        Driven_KM: "",
-        Extra_KM: 0,
-        Extra_KM_Charge: 0,
-        Total_Amount: d.Total_Amount,
-        Paid_Amount: d.Paid_Amount,
-        Pending_Amount: d.Pending_Amount,
-        Payment_Status: paymentStatus,
-        Booking_Status: "Active",
-        Agreement_Lang: d.Agreement_Lang
-      };
-
-      appState.bookings.unshift(newBooking);
-      const veh = appState.vehicles.find(v => String(v.Vehicle_ID) === String(d.Vehicle_ID));
-      if (veh) {
-        veh.Status = "Booked";
-        veh.Current_KM = d.Start_KM;
+      const draft = getCurrentBookingDraft();
+      if (!draft.Vehicle_ID) {
+        alert("Please select an available vehicle.");
+        return;
       }
 
-      renderAllSections();
-      showToast(`Booking ${bookingId} created & agreement ready.`, "📄");
-      openAgreementPopup({ ...newBooking, agreementText: buildAgreementDocumentText(newBooking) });
+      const btn = document.getElementById("btnSubmitBooking");
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
 
-      await postToBackend("createBooking", d);
-    });
+      const res = await postAction("createBooking", draft);
+      btn.disabled = false;
+      btn.textContent = "Submit Booking";
 
-    // --- 4. BOOKED / NON-BOOKED VEHICLES + DETAILS & RETURN KM MODAL ---
-    function renderFleetStatusTables() {
-      const bookedList = appState.bookings.filter(b => String(b.Booking_Status) === "Active");
-      const bookedVehIds = new Set(bookedList.map(b => String(b.Vehicle_ID)));
-      const nonBookedList = appState.vehicles.filter(v => String(v.Status) !== "Booked" && !bookedVehIds.has(String(v.Vehicle_ID)));
+      if (res.success) {
+        const bookingId = res.bookingId || "BKG-NEW";
+        const savedRecord = { ...draft, Booking_ID: bookingId };
+        document.getElementById("bookingForm").reset();
+        recalcBooking();
+        await loadAllData(false);
 
-      document.getElementById("bookedCountBadge").textContent = bookedList.length;
-      document.getElementById("nonBookedCountBadge").textContent = nonBookedList.length;
+        document.getElementById("successModalBody").innerHTML = `
+          <p style="margin-bottom:10px;">Your booking has been recorded.</p>
+          <p><strong>Booking ID:</strong> ${esc(bookingId)}</p>
+          <p><strong>Vehicle:</strong> ${esc(savedRecord.Vehicle_Name)} (${esc(savedRecord.Reg_Number)})</p>
+          <p><strong>Customer:</strong> ${esc(savedRecord.Customer_Name)}</p>
+          <p><strong>Total Amount:</strong> ${fmtNum(savedRecord.Total_Amount)} | <strong>Pending:</strong> ${fmtNum(savedRecord.Pending_Amount)}</p>
+          <p><strong>Allowed KM:</strong> ${fmtNum(savedRecord.Allowed_KM)} KM (Start: ${fmtNum(savedRecord.Start_KM)} KM)</p>
+        `;
 
-      document.getElementById("bookedVehiclesBody").innerHTML = bookedList.length
-        ? bookedList.map(b => `
-            <tr class="hover:bg-slate-50">
-              <td class="py-3 pr-2">
-                <div class="font-bold text-slate-900">${b.Vehicle_Name}</div>
-                <div class="text-[11px] text-slate-500">Reg: ${b.Reg_Number} • ${b.From_Date} → ${b.To_Date}</div>
-              </td>
-              <td class="py-3 px-2">
-                <div class="font-semibold text-slate-800">${b.Customer_Name}</div>
-                <div class="text-[11px] text-slate-500">${b.Phone}</div>
-              </td>
-              <td class="py-3 px-2">
-                <div class="font-semibold text-slate-800">${b.Allowed_KM} KM</div>
-                <div class="text-[11px] text-slate-500">Start: ${b.Start_KM}</div>
-              </td>
-              <td class="py-3 pl-2 text-right">
-                <div class="inline-flex flex-wrap justify-end gap-1.5">
-                  <button type="button" data-details="${b.Booking_ID}" class="btn-details px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[11px]">
-                    Details
-                  </button>
-                  <button type="button" data-return="${b.Booking_ID}" class="btn-return px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px]">
-                    Return
-                  </button>
-                </div>
-              </td>
-            </tr>
-          `).join("")
-        : `<tr><td colspan="4" class="py-8 text-center text-slate-400">No booked vehicles currently.</td></tr>`;
+        const actions = document.getElementById("successModalActions");
+        actions.innerHTML = "";
 
-      document.getElementById("nonBookedVehiclesBody").innerHTML = nonBookedList.length
-        ? nonBookedList.map(v => `
-            <tr class="hover:bg-slate-50">
-              <td class="py-3 pr-2">
-                <div class="font-bold text-slate-900">${v.Vehicle_Name}</div>
-                <div class="text-[11px] text-slate-500">Reg: ${v.Reg_Number} • ${v.Type}</div>
-              </td>
-              <td class="py-3 px-2 font-bold text-slate-800">${formatAmount(v.Daily_Rate)}/d</td>
-              <td class="py-3 px-2 font-semibold text-slate-700">${Number(v.Current_KM || 0).toLocaleString()} KM</td>
-              <td class="py-3 pl-2 text-right">
-                <button type="button" data-bookveh="${v.Vehicle_ID}" class="btn-quickbook px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px]">
-                  Book Now
-                </button>
-              </td>
-            </tr>
-          `).join("")
-        : `<tr><td colspan="4" class="py-8 text-center text-slate-400">All vehicles are currently booked.</td></tr>`;
+        const agrBtn = document.createElement("button");
+        agrBtn.className = "btn btn-primary";
+        agrBtn.textContent = "Open Agreement PDF";
+        agrBtn.onclick = () => {
+          closeModal("successModal");
+          openAgreementModal(savedRecord);
+        };
 
-      document.querySelectorAll(".btn-details").forEach(btn => {
-        btn.addEventListener("click", () => openDetailsModal(btn.getAttribute("data-details")));
-      });
+        const waBtn = document.createElement("button");
+        waBtn.className = "btn btn-success";
+        waBtn.textContent = "Send WhatsApp";
+        waBtn.onclick = () => sendWhatsAppBooking(savedRecord);
 
-      document.querySelectorAll(".btn-return").forEach(btn => {
-        btn.addEventListener("click", () => openReturnModal(btn.getAttribute("data-return")));
-      });
+        const doneBtn = document.createElement("button");
+        doneBtn.className = "btn btn-outline";
+        doneBtn.textContent = "Close";
+        doneBtn.onclick = () => closeModal("successModal");
 
-      document.querySelectorAll(".btn-quickbook").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const vId = btn.getAttribute("data-bookveh");
-          switchTab("booking");
-          populateBookingVehicleDropdown(vId);
-        });
-      });
+        actions.append(agrBtn, waBtn, doneBtn);
+        openModal("successModal");
+      } else {
+        alert("Booking failed: " + (res.message || "Unknown error"));
+      }
     }
 
-    function openDetailsModal(bookingId) {
-      const b = appState.bookings.find(x => String(x.Booking_ID) === String(bookingId));
-      if (!b) return;
-      appState.selectedDetailsBookingId = b.Booking_ID;
+    function previewCurrentFormAgreement() {
+      const draft = getCurrentBookingDraft();
+      if (!draft.Customer_Name && !draft.Vehicle_ID) {
+        alert("Fill in booking details first to preview the agreement.");
+        return;
+      }
+      openAgreementModal(draft);
+    }
 
-      const tot = Number(b.Total_Amount || 0);
-      const paid = Number(b.Paid_Amount || 0);
-      const pending = b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-        ? Number(b.Pending_Amount)
-        : Math.max(0, tot - paid);
+    function openAgreementModal(b) {
+      const lang = AGREEMENT_TEXT[b.Agreement_Lang] ? b.Agreement_Lang : "English";
+      const t = AGREEMENT_TEXT[lang];
+      const termsHtml = t.terms.map(item => `<li>${esc(item)}</li>`).join("");
 
-      document.getElementById("detailsModalTitle").textContent = `${b.Vehicle_Name} (${b.Booking_ID})`;
-      document.getElementById("detailsModalBody").innerHTML = `
-        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-          <div class="text-[11px] font-bold uppercase text-amber-800">Rented By</div>
-          <div class="text-base font-extrabold text-slate-900 mt-0.5">${b.Customer_Name}</div>
-          <div class="text-xs text-slate-700 mt-1">Phone: <strong>${b.Phone}</strong> • License No: <strong>${b.License_No}</strong></div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5 text-xs">
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Vehicle & Reg</span>
-            <strong>${b.Vehicle_Name} (${b.Reg_Number})</strong>
+      document.getElementById("agreementSheetContainer").innerHTML = `
+        <div class="agreement-sheet">
+          <div class="agr-header">
+            <div>
+              <div style="font-size:1.1rem;font-weight:800;">${esc(t.title)}</div>
+              <div style="font-size:0.78rem;color:#475569;">${esc(t.sub)}</div>
+            </div>
+            <div style="text-align:right;font-size:0.8rem;">
+              <div><strong>Ref:</strong> ${esc(b.Booking_ID || "AGR")}</div>
+              <div><strong>Lang:</strong> ${esc(lang)}</div>
+            </div>
           </div>
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Rental Period</span>
-            <strong>${b.From_Date} → ${b.To_Date} (${b.Total_Days}d)</strong>
+
+          <div class="agr-grid">
+            <div><strong>${esc(t.renter)}:</strong> ${esc(b.Customer_Name)}</div>
+            <div><strong>${esc(t.vehicle)}:</strong> ${esc(b.Vehicle_Name)} (${esc(b.Reg_Number)})</div>
+            <div><strong>${esc(t.phone)}:</strong> ${esc(b.Phone)}</div>
+            <div><strong>${esc(t.period)}:</strong> ${esc(b.From_Date)} to ${esc(b.To_Date)} (${b.Total_Days}d)</div>
+            <div><strong>${esc(t.license)}:</strong> ${esc(b.License_No)}</div>
+            <div><strong>${esc(t.rate)}:</strong> ${fmtNum(b.Daily_Rate)}/day</div>
+            <div><strong>${esc(t.total)}:</strong> ${fmtNum(b.Total_Amount)}</div>
+            <div><strong>${esc(t.paid)}:</strong> ${fmtNum(b.Paid_Amount)} | <strong>${esc(t.pending)}:</strong> ${fmtNum(b.Pending_Amount)}</div>
+            <div><strong>${esc(t.allowedKm)}:</strong> ${fmtNum(b.Allowed_KM)} KM</div>
+            <div><strong>${esc(t.startKm)}:</strong> ${fmtNum(b.Start_KM)} KM</div>
+            <div><strong>${esc(t.extraRate)}:</strong> ${fmtNum(b.Extra_KM_Rate)} / extra KM</div>
           </div>
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Start KM</span>
-            <strong>${b.Start_KM} KM</strong>
+
+          <div class="agr-terms">
+            <div style="font-weight:700;margin-bottom:4px;">${esc(t.termsTitle)}</div>
+            <ul>${termsHtml}</ul>
           </div>
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Allowed KM Limit</span>
-            <strong>${b.Allowed_KM} KM (${b.Daily_KM_Limit}/day)</strong>
+
+          <div style="font-size:0.76rem;color:#475569;">
+            Note: Download/Print PDF first if attaching the PDF file in WhatsApp.
           </div>
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Extra KM Rate</span>
-            <strong>${formatAmount(b.Extra_KM_Rate)} / KM</strong>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="text-slate-500 block">Rent (Total / Paid / Pending)</span>
-            <strong>${formatAmount(tot)} / <span class="text-emerald-700">${formatAmount(paid)}</span> / <span class="text-rose-700">${formatAmount(pending)}</span></strong>
+
+          <div class="sig-row">
+            <div class="sig-line">${esc(t.renterSig)}</div>
+            <div class="sig-line">${esc(t.ownerSig)}</div>
           </div>
         </div>
       `;
 
-      const modal = document.getElementById("detailsModal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
+      document.getElementById("btnAgreementWa").onclick = () => sendWhatsAppBooking(b);
+      openModal("agreementModal");
     }
 
-    function closeDetailsModal() {
-      const m = document.getElementById("detailsModal");
-      m.classList.add("hidden");
-      m.classList.remove("flex");
+    function sendWhatsAppBooking(b) {
+      const cleanPhone = String(b.Phone || "").replace(/[^\d]/g, "");
+      const msg = [
+        `Rental Booking Confirmed (${b.Booking_ID})`,
+        `Vehicle: ${b.Vehicle_Name} (${b.Reg_Number})`,
+        `Period: ${b.From_Date} to ${b.To_Date} (${b.Total_Days} days)`,
+        `Total: ${fmtNum(b.Total_Amount)} | Paid: ${fmtNum(b.Paid_Amount)} | Pending: ${fmtNum(b.Pending_Amount)}`,
+        `Allowed KM: ${fmtNum(b.Allowed_KM)} KM | Start KM: ${fmtNum(b.Start_KM)} KM`,
+        `Extra KM Rate: ${fmtNum(b.Extra_KM_Rate)}/KM`
+      ].join("
+");
+
+      const url = cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
     }
 
-    document.getElementById("closeDetailsModalBtn").addEventListener("click", closeDetailsModal);
-    document.getElementById("detailsDoneBtn").addEventListener("click", closeDetailsModal);
-    document.getElementById("detailsOpenReturnBtn").addEventListener("click", () => {
-      const id = appState.selectedDetailsBookingId;
-      closeDetailsModal();
-      if (id) openReturnModal(id);
-    });
+    function renderFleetStatus() {
+      const activeBookings = state.bookings.filter(b => String(b.Booking_Status).toLowerCase() === "active");
+      const bookedBody = document.getElementById("bookedVehiclesBody");
+
+      if (!activeBookings.length) {
+        bookedBody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">No booked vehicles right now</td></tr>`;
+      } else {
+        bookedBody.innerHTML = activeBookings.map(b => `
+          <tr>
+            <td><strong>${esc(b.Vehicle_Name)}</strong><br><span style="font-size:0.76rem;color:var(--muted);">${esc(b.Reg_Number)}</span></td>
+            <td>${esc(b.Customer_Name)}<br><span style="font-size:0.76rem;color:var(--muted);">${esc(b.Phone)}</span></td>
+            <td>Start: ${fmtNum(b.Start_KM)} KM<br><span style="font-size:0.76rem;color:var(--muted);">Limit: ${fmtNum(b.Allowed_KM)} KM</span></td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-outline btn-sm" onclick="openBookingDetails('${esc(b.Booking_ID)}')">Details</button>
+              <button class="btn btn-success btn-sm" onclick="openReturnModal('${esc(b.Booking_ID)}')">Return</button>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      const available = state.vehicles.filter(v => String(v.Status).toLowerCase() === "available");
+      const availBody = document.getElementById("availableVehiclesBody");
+
+      if (!available.length) {
+        availBody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);">No available vehicles</td></tr>`;
+      } else {
+        availBody.innerHTML = available.map(v => `
+          <tr>
+            <td><strong>${esc(v.Vehicle_Name)}</strong><br><span style="font-size:0.76rem;color:var(--muted);">${esc(v.Reg_Number)}</span></td>
+            <td>${fmtNum(v.Daily_Rate)}/d<br><span style="font-size:0.76rem;color:var(--muted);">${fmtNum(v.Daily_KM_Limit)} KM/d</span></td>
+            <td>${fmtNum(v.Current_KM)} KM</td>
+            <td><button class="btn btn-accent btn-sm" onclick="quickBookVehicle('${esc(v.Vehicle_ID)}')">Book</button></td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    function openBookingDetails(bookingId) {
+      const b = state.bookings.find(item => String(item.Booking_ID) === String(bookingId));
+      if (!b) return;
+      document.getElementById("detailsModalBody").innerHTML = `
+        <p><strong>Booking ID:</strong> ${esc(b.Booking_ID)}</p>
+        <p><strong>Vehicle:</strong> ${esc(b.Vehicle_Name)} (${esc(b.Reg_Number)})</p>
+        <p><strong>Renter Name:</strong> ${esc(b.Customer_Name)}</p>
+        <p><strong>Contact Number:</strong> ${esc(b.Phone)}</p>
+        <p><strong>License No:</strong> ${esc(b.License_No)}</p>
+        <p><strong>Dates:</strong> ${esc(b.From_Date)} to ${esc(b.To_Date)} (${b.Total_Days} day(s))</p>
+        <p><strong>Start KM:</strong> ${fmtNum(b.Start_KM)} KM | <strong>Allowed KM:</strong> ${fmtNum(b.Allowed_KM)} KM</p>
+        <p><strong>Extra KM Rate:</strong> ${fmtNum(b.Extra_KM_Rate)} / KM</p>
+        <p><strong>Total Rent:</strong> ${fmtNum(b.Total_Amount)} | <strong>Paid:</strong> ${fmtNum(b.Paid_Amount)} | <strong>Pending:</strong> ${fmtNum(b.Pending_Amount)}</p>
+        <div class="btn-row">
+          <button class="btn btn-primary btn-sm" onclick="closeModal('detailsModal'); openAgreementModal(state.bookings.find(x => x.Booking_ID === '${esc(b.Booking_ID)}'))">Agreement</button>
+        </div>
+      `;
+      openModal("detailsModal");
+    }
+
+    function quickBookVehicle(vehicleId) {
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      document.querySelector('.nav-btn[data-page="booking"]').classList.add("active");
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById("page-booking").classList.add("active");
+      populateBookingVehicles(vehicleId);
+    }
 
     function openReturnModal(bookingId) {
-      const b = appState.bookings.find(x => String(x.Booking_ID) === String(bookingId));
+      const b = state.bookings.find(item => String(item.Booking_ID) === String(bookingId));
       if (!b) return;
-      appState.selectedReturnBookingId = b.Booking_ID;
-
-      document.getElementById("returnModalTitle").textContent = `Return Vehicle — ${b.Vehicle_Name}`;
-      document.getElementById("returnInfoGrid").innerHTML = `
-        <div><span class="text-slate-500 block text-[11px]">Customer</span><strong>${b.Customer_Name}</strong></div>
-        <div><span class="text-slate-500 block text-[11px]">Start KM</span><strong>${b.Start_KM} KM</strong></div>
-        <div><span class="text-slate-500 block text-[11px]">Allowed KM</span><strong>${b.Allowed_KM} KM</strong></div>
-        <div><span class="text-slate-500 block text-[11px]">Extra Rate</span><strong>${formatAmount(b.Extra_KM_Rate)}/KM</strong></div>
+      activeReturnBooking = b;
+      document.getElementById("retBookingId").value = b.Booking_ID;
+      document.getElementById("retEndKm").value = b.Start_KM || 0;
+      document.getElementById("retPaidAmount").value = b.Paid_Amount || 0;
+      document.getElementById("retSummary").innerHTML = `
+        <strong>${esc(b.Vehicle_Name)} (${esc(b.Reg_Number)})</strong> — Renter: <strong>${esc(b.Customer_Name)}</strong><br>
+        Start KM: <strong>${fmtNum(b.Start_KM)} KM</strong> · Allowed KM: <strong>${fmtNum(b.Allowed_KM)} KM</strong> · Extra Rate: <strong>${fmtNum(b.Extra_KM_Rate)}/KM</strong><br>
+        Base Rent: <strong>${fmtNum(b.Base_Rent || b.Total_Amount)}</strong>
       `;
-
-      const endInput = document.getElementById("retEndKm");
-      const paidInput = document.getElementById("retPaidAmount");
-      endInput.min = Number(b.Start_KM || 0);
-      endInput.value = Number(b.Start_KM || 0) + Number(b.Allowed_KM || 0);
-      paidInput.value = Number(b.Paid_Amount || 0);
-
-      updateReturnCalculationView(b);
-      endInput.oninput = () => updateReturnCalculationView(b);
-
-      const modal = document.getElementById("returnModal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
+      recalcReturnKm();
+      openModal("returnModal");
     }
 
-    function updateReturnCalculationView(b) {
-      const startKm = Number(b.Start_KM || 0);
-      const allowedKm = Number(b.Allowed_KM || 0);
-      const extraRate = Number(b.Extra_KM_Rate || 0);
-      const baseRent = Number(b.Base_Rent || b.Total_Amount || 0);
-      const paidNow = Number(document.getElementById("retPaidAmount").value || 0);
+    function recalcReturnKm() {
+      if (!activeReturnBooking) return;
+      const startKm = Number(activeReturnBooking.Start_KM || 0);
+      const allowedKm = Number(activeReturnBooking.Allowed_KM || 0);
+      const extraRate = Number(activeReturnBooking.Extra_KM_Rate || 0);
+      const baseRent = Number(activeReturnBooking.Base_Rent || activeReturnBooking.Total_Amount || 0);
 
-      const endKm = Math.max(startKm, Number(document.getElementById("retEndKm").value || startKm));
-      const drivenKm = endKm - startKm;
+      const endKm = Number(document.getElementById("retEndKm").value || startKm);
+      const paid = Number(document.getElementById("retPaidAmount").value || 0);
+
+      const drivenKm = Math.max(0, endKm - startKm);
       const extraKm = Math.max(0, drivenKm - allowedKm);
       const extraCharge = extraKm * extraRate;
       const finalTotal = baseRent + extraCharge;
-      const pendingAmt = Math.max(0, finalTotal - paidNow);
 
-      const box = document.getElementById("retKmAlertBox");
-      const title = document.getElementById("retKmStatusTitle");
-      const badge = document.getElementById("retKmBadge");
+      document.getElementById("retDrivenKm").textContent = `${fmtNum(drivenKm)} KM`;
+      document.getElementById("retExtraKm").textContent = `${fmtNum(extraKm)} KM`;
+      document.getElementById("retExtraCharge").textContent = fmtNum(extraCharge);
+      document.getElementById("retFinalTotal").textContent = fmtNum(finalTotal);
 
+      const alertBox = document.getElementById("retKmAlert");
       if (extraKm > 0) {
-        box.className = "p-4 rounded-2xl border-2 border-rose-400 bg-rose-50 text-rose-950 transition";
-        title.textContent = "KM LIMIT EXCEEDED — EXTRA KM CHARGE APPLIED";
-        badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white";
-        badge.textContent = `EXCEEDED BY +${extraKm} KM`;
+        alertBox.innerHTML = `<div class="alert-box alert-bad">KM limit exceeded by ${fmtNum(extraKm)} KM! Extra charge: ${fmtNum(extraCharge)}.</div>`;
       } else {
-        box.className = "p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950 transition";
-        title.textContent = "WITHIN KM LIMIT";
-        badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-600 text-white";
-        badge.textContent = "NO EXTRA KM";
+        alertBox.innerHTML = `<div class="alert-box alert-ok">Within allowed KM limit (${fmtNum(allowedKm)} KM). No extra KM charge.</div>`;
       }
-
-      document.getElementById("retKmBreakdown").innerHTML = `
-        <div><span class="opacity-75 block text-[11px]">Driven KM</span><strong class="text-sm">${drivenKm} KM</strong></div>
-        <div><span class="opacity-75 block text-[11px]">Extra KM</span><strong class="text-sm">${extraKm} KM</strong></div>
-        <div><span class="opacity-75 block text-[11px]">Extra Charge</span><strong class="text-sm">${formatAmount(extraCharge)}</strong></div>
-        <div><span class="opacity-75 block text-[11px]">Final Total / Due</span><strong class="text-sm">${formatAmount(finalTotal)} / ${formatAmount(pendingAmt)}</strong></div>
-      `;
     }
 
-    document.getElementById("retPaidAmount").addEventListener("input", () => {
-      const b = appState.bookings.find(x => String(x.Booking_ID) === String(appState.selectedReturnBookingId));
-      if (b) updateReturnCalculationView(b);
-    });
-
-    function closeReturnModal() {
-      const m = document.getElementById("returnModal");
-      m.classList.add("hidden");
-      m.classList.remove("flex");
-    }
-
-    document.getElementById("closeReturnModalBtn").addEventListener("click", closeReturnModal);
-    document.getElementById("cancelReturnBtn").addEventListener("click", closeReturnModal);
-
-    document.getElementById("returnForm").addEventListener("submit", async e => {
+    async function handleReturnVehicle(e) {
       e.preventDefault();
-      const b = appState.bookings.find(x => String(x.Booking_ID) === String(appState.selectedReturnBookingId));
-      if (!b) return;
-
-      const startKm = Number(b.Start_KM || 0);
-      const endKm = Math.max(startKm, Number(document.getElementById("retEndKm").value || startKm));
-      const drivenKm = endKm - startKm;
-      const allowedKm = Number(b.Allowed_KM || 0);
-      const extraKm = Math.max(0, drivenKm - allowedKm);
-      const extraCharge = extraKm * Number(b.Extra_KM_Rate || 0);
-      const baseRent = Number(b.Base_Rent || b.Total_Amount || 0);
-      const finalTotal = baseRent + extraCharge;
-      const paidAmount = Number(document.getElementById("retPaidAmount").value || 0);
-      const pendingAmount = Math.max(0, finalTotal - paidAmount);
-
-      b.End_KM = endKm;
-      b.Driven_KM = drivenKm;
-      b.Extra_KM = extraKm;
-      b.Extra_KM_Charge = extraCharge;
-      b.Total_Amount = finalTotal;
-      b.Paid_Amount = paidAmount;
-      b.Pending_Amount = pendingAmount;
-      b.Payment_Status = pendingAmount <= 0 ? "Paid" : (paidAmount > 0 ? "Partial" : "Pending");
-      b.Booking_Status = "Completed";
-
-      const veh = appState.vehicles.find(v => String(v.Vehicle_ID) === String(b.Vehicle_ID));
-      if (veh) {
-        veh.Current_KM = endKm;
-        veh.Status = "Available";
+      if (!activeReturnBooking) return;
+      const endKm = Number(document.getElementById("retEndKm").value || 0);
+      const startKm = Number(activeReturnBooking.Start_KM || 0);
+      if (endKm < startKm) {
+        alert("Return odometer cannot be lower than start odometer.");
+        return;
       }
 
-      closeReturnModal();
-      renderAllSections();
-      showToast(
-        extraKm > 0
-          ? `Returned ${b.Vehicle_Name}: +${extraKm} Extra KM (${formatAmount(extraCharge)}) added.`
-          : `Returned ${b.Vehicle_Name} within KM limit.`,
-        extraKm > 0 ? "⚠️" : "✅"
-      );
+      const btn = document.getElementById("btnConfirmReturn");
+      btn.disabled = true;
+      btn.textContent = "Updating...";
 
-      await postToBackend("returnVehicle", {
-        Booking_ID: b.Booking_ID,
+      const res = await postAction("returnVehicle", {
+        Booking_ID: activeReturnBooking.Booking_ID,
         End_KM: endKm,
-        Paid_Amount: paidAmount
+        Paid_Amount: Number(document.getElementById("retPaidAmount").value || 0)
       });
-    });
 
-    // --- 5. RENTS SECTION ---
-    function renderRentsSection() {
-      const totalBilled = appState.bookings.reduce((s, b) => s + Number(b.Total_Amount || 0), 0);
-      const totalReceived = appState.bookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
-      const totalPending = appState.bookings.reduce((s, b) => {
-        const tot = Number(b.Total_Amount || 0);
-        const paid = Number(b.Paid_Amount || 0);
-        const pend = b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-          ? Number(b.Pending_Amount)
-          : Math.max(0, tot - paid);
-        return s + Math.max(0, pend);
-      }, 0);
+      btn.disabled = false;
+      btn.textContent = "Complete Return";
 
-      document.getElementById("rentsTotalBilled").textContent = formatAmount(totalBilled);
-      document.getElementById("rentsTotalReceived").textContent = formatAmount(totalReceived);
-      document.getElementById("rentsTotalPending").textContent = formatAmount(totalPending);
+      if (res.success) {
+        closeModal("returnModal");
+        await loadAllData(false);
+        alert("Vehicle returned and odometer updated.");
+      } else {
+        alert("Return update failed: " + (res.message || "Unknown error"));
+      }
+    }
 
-      document.getElementById("rentsLedgerBody").innerHTML = appState.bookings.map(b => {
-        const tot = Number(b.Total_Amount || 0);
-        const paid = Number(b.Paid_Amount || 0);
-        const pend = b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-          ? Number(b.Pending_Amount)
-          : Math.max(0, tot - paid);
-        const extraKm = Number(b.Extra_KM || 0);
+    function renderRentsPage() {
+      const gross = state.bookings.reduce((s, b) => s + Number(b.Total_Amount || 0), 0);
+      const paid = state.bookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
+      const pending = state.bookings.reduce((s, b) => s + Number(b.Pending_Amount || 0), 0);
 
+      document.getElementById("rentGrossTotal").textContent = fmtNum(gross);
+      document.getElementById("rentReceivedTotal").textContent = fmtNum(paid);
+      document.getElementById("rentPendingTotal").textContent = fmtNum(pending);
+
+      const tbody = document.getElementById("rentsTableBody");
+      if (!state.bookings.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);">No rent records</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = state.bookings.map(b => {
+        const pend = Number(b.Pending_Amount || 0);
+        const badgeClass = pend <= 0 ? "badge-ok" : (Number(b.Paid_Amount || 0) > 0 ? "badge-warn" : "badge-bad");
         return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3 pr-2">
-              <div class="font-bold text-slate-900">${b.Customer_Name}</div>
-              <div class="text-xs text-slate-500">${b.Booking_ID} • ${b.Phone}</div>
-            </td>
-            <td class="py-3 px-2 font-medium">${b.Vehicle_Name}</td>
-            <td class="py-3 px-2">
-              ${extraKm > 0
-                ? `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700">+${extraKm} KM (${formatAmount(b.Extra_KM_Charge)})</span>`
-                : `<span class="text-xs text-slate-400">0 KM</span>`}
-            </td>
-            <td class="py-3 px-2 font-bold">${formatAmount(tot)}</td>
-            <td class="py-3 px-2 font-bold text-emerald-600">${formatAmount(paid)}</td>
-            <td class="py-3 px-2 font-bold ${pend > 0 ? "text-rose-600" : "text-slate-400"}">${formatAmount(pend)}</td>
-            <td class="py-3 pl-2 text-right">
-              ${pend > 0
-                ? `<button type="button" data-settle="${b.Booking_ID}" class="btn-settle px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">Mark Paid</button>`
-                : `<span class="text-xs font-semibold text-emerald-700">Paid</span>`}
+          <tr>
+            <td><strong>${esc(b.Booking_ID)}</strong></td>
+            <td>${esc(b.Vehicle_Name)}</td>
+            <td>${esc(b.Customer_Name)}</td>
+            <td>${fmtNum(b.Total_Amount)}</td>
+            <td>${fmtNum(b.Paid_Amount)}</td>
+            <td><strong>${fmtNum(pend)}</strong></td>
+            <td><span class="badge ${badgeClass}">${esc(b.Payment_Status || (pend <= 0 ? "Paid" : "Pending"))}</span></td>
+            <td>
+              ${pend > 0 ? `<button class="btn btn-success btn-sm" onclick="markPaidFull('${esc(b.Booking_ID)}', ${Number(b.Total_Amount || 0)})">Mark Paid</button>` : `<span style="color:var(--muted);font-size:0.78rem;">Settled</span>`}
             </td>
           </tr>
         `;
       }).join("");
-
-      document.querySelectorAll(".btn-settle").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const bId = btn.getAttribute("data-settle");
-          const b = appState.bookings.find(x => String(x.Booking_ID) === String(bId));
-          if (!b) return;
-          const fullAmt = Number(b.Total_Amount || 0);
-          b.Paid_Amount = fullAmt;
-          b.Pending_Amount = 0;
-          b.Payment_Status = "Paid";
-          renderAllSections();
-          showToast(`Payment marked as Paid for ${b.Booking_ID}.`, "💰");
-          await postToBackend("updatePayment", { Booking_ID: b.Booking_ID, Paid_Amount: fullAmt });
-        });
-      });
     }
 
-    function renderRentsCharts() {
-      const barEl = document.getElementById("rentsComparisonChart");
-      const pieEl = document.getElementById("rentsSplitChart");
-      if (!barEl || !pieEl || !window.Chart) return;
-
-      destroyChart("rentsComp");
-      destroyChart("rentsSplit");
-
-      const labels = appState.bookings.map(b => b.Booking_ID);
-      const received = appState.bookings.map(b => Number(b.Paid_Amount || 0));
-      const pending = appState.bookings.map(b => {
-        const tot = Number(b.Total_Amount || 0);
-        const paid = Number(b.Paid_Amount || 0);
-        return b.Pending_Amount !== "" && b.Pending_Amount !== undefined
-          ? Number(b.Pending_Amount)
-          : Math.max(0, tot - paid);
+    async function markPaidFull(bookingId, totalAmount) {
+      if (!confirm(`Mark booking ${bookingId} as fully paid (${fmtNum(totalAmount)})?`)) return;
+      const res = await postAction("updatePayment", {
+        Booking_ID: bookingId,
+        Paid_Amount: totalAmount
       });
-
-      appState.charts.rentsComp = new Chart(barEl, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            { label: "Received Rent", data: received, backgroundColor: "#0ea5e9", borderRadius: 6 },
-            { label: "Pending Rent", data: pending, backgroundColor: "#f59e0b", borderRadius: 6 }
-          ]
-        },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-      });
-
-      const sumRec = received.reduce((a, b) => a + b, 0);
-      const sumPend = pending.reduce((a, b) => a + b, 0);
-
-      appState.charts.rentsSplit = new Chart(pieEl, {
-        type: "doughnut",
-        data: {
-          labels: ["Received Rent", "Pending Rent"],
-          datasets: [{ data: [sumRec, sumPend], backgroundColor: ["#10b981", "#ef4444"] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
-      });
-    }
-
-    // --- 6. VEHICLE REPAIR SECTION ---
-    function populateRepairVehicleDropdown() {
-      const sel = document.getElementById("repVehicleId");
-      if (!sel) return;
-      sel.innerHTML = appState.vehicles.map(v => `
-        <option value="${v.Vehicle_ID}">${v.Vehicle_Name} (Reg: ${v.Reg_Number})</option>
-      `).join("");
-      if (!document.getElementById("repDate").value) {
-        document.getElementById("repDate").value = "2026-11-26";
+      if (res.success) {
+        await loadAllData(false);
       }
     }
 
-    function renderRepairsSection() {
-      const totalCost = appState.repairs.reduce((s, r) => s + Number(r.Cost || 0), 0);
-      document.getElementById("totalRepairExpenseText").textContent = formatAmount(totalCost);
-
-      document.getElementById("repairsTableBody").innerHTML = appState.repairs.length
-        ? appState.repairs.map(r => `
-            <tr class="hover:bg-slate-50">
-              <td class="py-3 pr-2 text-xs font-semibold text-slate-600 whitespace-nowrap">${r.Date}</td>
-              <td class="py-3 px-2 font-bold text-slate-900">${r.Vehicle_Name}</td>
-              <td class="py-3 px-2 text-slate-700">${r.Remarks}</td>
-              <td class="py-3 pl-2 text-right font-extrabold text-rose-600 whitespace-nowrap">${formatAmount(r.Cost)}</td>
-            </tr>
-          `).join("")
-        : `<tr><td colspan="4" class="py-8 text-center text-slate-400">No repair entries logged yet.</td></tr>`;
+    function populateRepairVehicles() {
+      const sel = document.getElementById("repVehicle");
+      if (!state.vehicles.length) {
+        sel.innerHTML = `<option value="">No vehicles available</option>`;
+        return;
+      }
+      sel.innerHTML = `<option value="">-- Choose Vehicle --</option>` + state.vehicles.map(v =>
+        `<option value="${esc(v.Vehicle_ID)}">${esc(v.Vehicle_Name)} (${esc(v.Reg_Number)})</option>`
+      ).join("");
     }
 
-    document.getElementById("addRepairForm").addEventListener("submit", async e => {
+    async function handleAddRepair(e) {
       e.preventDefault();
-      const vehId = document.getElementById("repVehicleId").value;
-      const veh = appState.vehicles.find(v => String(v.Vehicle_ID) === String(vehId));
-      const payload = {
-        Vehicle_ID: vehId,
+      const vid = document.getElementById("repVehicle").value;
+      if (!vid) {
+        alert("Please select a vehicle.");
+        return;
+      }
+
+      const btn = document.getElementById("btnAddRepair");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      const res = await postAction("addRepair", {
+        Vehicle_ID: vid,
         Date: document.getElementById("repDate").value,
         Cost: Number(document.getElementById("repCost").value || 0),
         Remarks: document.getElementById("repRemarks").value.trim()
-      };
+      });
 
-      const newRep = {
-        Repair_ID: "REP-" + String(appState.repairs.length + 1).padStart(3, "0"),
-        Vehicle_ID: vehId,
-        Vehicle_Name: veh ? veh.Vehicle_Name : vehId,
-        Reg_Number: veh ? veh.Reg_Number : "",
-        ...payload
-      };
+      btn.disabled = false;
+      btn.textContent = "Save Repair";
 
-      appState.repairs.unshift(newRep);
-      document.getElementById("repCost").value = "";
-      document.getElementById("repRemarks").value = "";
+      if (res.success) {
+        document.getElementById("repairForm").reset();
+        document.getElementById("repDate").valueAsDate = new Date();
+        await loadAllData(false);
+        alert("Repair entry saved.");
+      } else {
+        alert("Failed to save repair: " + (res.message || "Unknown error"));
+      }
+    }
 
-      renderAllSections();
-      showToast("Repair entry saved.", "🛠️");
-      await postToBackend("addRepair", payload);
-    });
+    function renderRepairsPage() {
+      const tbody = document.getElementById("repairsTableBody");
+      if (!state.repairs.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);">No repair logs yet</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = [...state.repairs].reverse().map(r => `
+        <tr>
+          <td>${esc(r.Repair_ID)}</td>
+          <td>${esc(r.Date)}</td>
+          <td><strong>${esc(r.Vehicle_Name)}</strong> (${esc(r.Reg_Number)})</td>
+          <td>${esc(r.Remarks)}</td>
+          <td><strong>${fmtNum(r.Cost)}</strong></td>
+        </tr>
+      `).join("");
+    }
 
-    // --- 7. HISTORY OF VEHICLE SECTION ---
-    function renderVehicleHistorySection() {
+    function renderHistoryPage() {
       const tbody = document.getElementById("vehicleHistoryBody");
-      tbody.innerHTML = appState.vehicles.map(v => {
-        const vBookings = appState.bookings.filter(b => String(b.Vehicle_ID) === String(v.Vehicle_ID));
-        const vRepairs = appState.repairs.filter(r => String(r.Vehicle_ID) === String(v.Vehicle_ID));
+      if (!state.vehicles.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);">No vehicle history available</td></tr>`;
+        return;
+      }
 
-        const trips = vBookings.length;
-        const drivenKm = vBookings.reduce((s, b) => s + Number(b.Driven_KM || 0), 0);
-        const extraKm = vBookings.reduce((s, b) => s + Number(b.Extra_KM || 0), 0);
-        const extraCharge = vBookings.reduce((s, b) => s + Number(b.Extra_KM_Charge || 0), 0);
-        const totalRentReceived = vBookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
-        const totalRepairCost = vRepairs.reduce((s, r) => s + Number(r.Cost || 0), 0);
-        const netEarnings = totalRentReceived - totalRepairCost;
+      tbody.innerHTML = state.vehicles.map(v => {
+        const vBookings = state.bookings.filter(b => String(b.Vehicle_ID) === String(v.Vehicle_ID));
+        const vRepairs = state.repairs.filter(r => String(r.Vehicle_ID) === String(v.Vehicle_ID));
+
+        const totalRent = vBookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
+        const totalRepair = vRepairs.reduce((s, r) => s + Number(r.Cost || 0), 0);
+        const net = totalRent - totalRepair;
 
         return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3.5 pr-2">
-              <div class="font-bold text-slate-900">${v.Vehicle_Name}</div>
-              <div class="text-xs text-slate-500">Reg: ${v.Reg_Number} • ${v.Type}</div>
-            </td>
-            <td class="py-3.5 px-2 font-semibold">${trips}</td>
-            <td class="py-3.5 px-2 text-xs">
-              <div>Driven: <strong>${drivenKm} KM</strong></div>
-              <div class="text-slate-500">Extra: <strong>${extraKm} KM</strong> (${formatAmount(extraCharge)})</div>
-            </td>
-            <td class="py-3.5 px-2 font-extrabold text-emerald-600">${formatAmount(totalRentReceived)}</td>
-            <td class="py-3.5 px-2 font-extrabold text-rose-600">${formatAmount(totalRepairCost)}</td>
-            <td class="py-3.5 pl-2 text-right font-extrabold ${netEarnings >= 0 ? "text-slate-900" : "text-rose-700"}">
-              ${formatAmount(netEarnings)}
-            </td>
+          <tr>
+            <td><strong>${esc(v.Vehicle_Name)}</strong></td>
+            <td>${esc(v.Reg_Number)}</td>
+            <td>${vBookings.length}</td>
+            <td style="color:var(--success);font-weight:700;">${fmtNum(totalRent)}</td>
+            <td style="color:var(--danger);font-weight:700;">${fmtNum(totalRepair)}</td>
+            <td style="font-weight:700;">${fmtNum(net)}</td>
           </tr>
         `;
       }).join("");
     }
 
-    // --- Initial Boot ---
-    window.addEventListener("DOMContentLoaded", () => {
-      renderAllSections();
-      switchTab("home");
-      fetchLiveData(false);
-    });
+    function renderCharts() {
+      const paid = state.bookings.reduce((s, b) => s + Number(b.Paid_Amount || 0), 0);
+      const pending = state.bookings.reduce((s, b) => s + Number(b.Pending_Amount || 0), 0);
+
+      const homeCtx = document.getElementById("homeRentChart");
+      if (homeCtx) {
+        if (homeChart) homeChart.destroy();
+        homeChart = new Chart(homeCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["Rent Received", "Pending Rent"],
+            datasets: [{
+              data: [paid, pending],
+              backgroundColor: ["#059669", "#dc2626"]
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+        });
+      }
+
+      const rentsCtx = document.getElementById("rentsBarChart");
+      if (rentsCtx) {
+        if (rentsChart) rentsChart.destroy();
+        const labels = state.bookings.map(b => b.Booking_ID);
+        rentsChart = new Chart(rentsCtx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Received",
+                data: state.bookings.map(b => Number(b.Paid_Amount || 0)),
+                backgroundColor: "#059669"
+              },
+              {
+                label: "Pending",
+                data: state.bookings.map(b => Number(b.Pending_Amount || 0)),
+                backgroundColor: "#d97706"
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: { x: { stacked: false }, y: { beginAtZero: true } }
+          }
+        });
+      }
+    }
+
+    // Initialize defaults
+    document.getElementById("repDate").valueAsDate = new Date();
+    const todayStr = new Date().toISOString().slice(0, 10);
+    document.getElementById("bkgFrom").value = todayStr;
+    document.getElementById("bkgTo").value = todayStr;
+    recalcBooking();
+    loadAllData(false);
   </script>
 </body>
 </html>
